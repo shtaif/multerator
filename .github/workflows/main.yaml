@@ -1,24 +1,16 @@
 name: CI
+
 on:
   pull_request:
     branches: [master]
 
 jobs:
-  # my_test_github_action_1:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - run: echo "LOL 1!"
-  #     - env:
-  #         BASE_BRANCH: ${{ github.base_ref }}
-  #       run: echo "--------------------------- github.head_ref = ${{ github.head_ref }}, github.base_ref = ${{ github.base_ref }}, runner.os = ${{ runner.os }}"
-
-  my_test_github_action_2:
+  code_check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
           ref: ${{ github.head_ref }}
-          # path: my-test-multiparser
 
       - uses: actions/setup-node@v2
         with:
