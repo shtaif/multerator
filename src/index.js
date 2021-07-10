@@ -4,7 +4,7 @@ const normalizeInputToAsyncIter = require('./utils/normalizeInputToAsyncIter');
 const splitMultipartStreamToParts = require('./utils/splitMultipartStreamToParts');
 const parseMultipartPart = require('./utils/parseMultipartPart');
 
-module.exports = parseMultipartStream;
+module.exports = multerator;
 
 // TODO: For focused testing - several occurances of the search sequence in a row
 // TODO: For focused testing - stream starts with an occurance of search sequence
@@ -18,7 +18,7 @@ module.exports = parseMultipartStream;
 // For making a `Readable.from` ponyfill -> https://github.com/nodejs/readable-stream/blob/master/lib/internal/streams/from.js + https://github.com/nodejs/readable-stream/blob/master/errors.js
 // TODO: Should really provide a default for `maxFileSize` and `maxFieldSize`?
 
-async function* parseMultipartStream({
+async function* multerator({
   input,
   boundary,
   maxFileSize = defaultMaxFileSize,
@@ -41,7 +41,7 @@ async function* parseMultipartStream({
 const defaultMaxFileSize = 1024 ** 2 * 100;
 const defaultMaxFieldSize = 1024 * 100;
 
-// async function* parseMultipartStream2({} = {}) {
+// async function* multerator2({} = {}) {
 //   const { Readable } = require('stream');
 //   const {
 //     splitAsyncIterBySequence2,
