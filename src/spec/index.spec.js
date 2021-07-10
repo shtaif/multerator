@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { promisify } = require('util');
 const { expect } = require('chai');
-const multiparser = require('..');
+const multerator = require('..');
 const pipe = require('./utils/pipe');
 const collectMultipartStream = require('./utils/collectMultipartStream');
 const prepareMultipartIterator = require('./utils/prepareMultipartIterator');
@@ -47,7 +47,7 @@ it('General test (TODO: refactor?)', async () => {
       `--${boundary}--`,
       '', // TODO: Is extra trailing "\r\n" required here?...
     ]),
-    stream => multiparser({ input: stream, boundary }),
+    stream => multerator({ input: stream, boundary }),
     collectMultipartStream
   );
 
@@ -118,7 +118,7 @@ describe('Variable chunk size mass generated tests (TODO: refactor?)', () => {
           '', // TODO: Is extra trailing "\r\n" required here?...
         ],
         input => prepareMultipartIterator(input, chunkSize),
-        input => multiparser({ input, boundary })
+        input => multerator({ input, boundary })
       );
 
       const results = await collectMultipartStream(parsedIter);

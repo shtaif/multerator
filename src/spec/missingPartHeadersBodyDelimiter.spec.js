@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const multiparser = require('..');
+const multerator = require('..');
 const pipe = require('./utils/pipe');
 const collectMultipartStream = require('./utils/collectMultipartStream');
 const prepareMultipartIterator = require('./utils/prepareMultipartIterator');
@@ -19,7 +19,7 @@ describe('Missing part headers<->body delimiter', () => {
         `--${boundary}--`,
       ],
       prepareMultipartIterator,
-      stream => multiparser({ input: stream, boundary }),
+      stream => multerator({ input: stream, boundary }),
       collectMultipartStream
     );
 
@@ -43,7 +43,7 @@ describe('Missing part headers<->body delimiter', () => {
         `--${boundary}--`,
       ],
       prepareMultipartIterator,
-      stream => multiparser({ input: stream, boundary }),
+      stream => multerator({ input: stream, boundary }),
       collectMultipartStream
     );
 
@@ -69,7 +69,7 @@ describe('Missing part headers<->body delimiter', () => {
         `--${boundary}--`,
       ],
       prepareMultipartIterator,
-      stream => multiparser({ input: stream, boundary }),
+      stream => multerator({ input: stream, boundary }),
       collectMultipartStream
     );
 

@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const multiparser = require('..');
+const multerator = require('..');
 const pipe = require('./utils/pipe');
 const collectMultipartStream = require('./utils/collectMultipartStream');
 const prepareMultipartIterator = require('./utils/prepareMultipartIterator');
@@ -8,7 +8,7 @@ describe('Missing closing boundary', () => {
   it('Throws missing closing boundary error on a completely empty stream', async () => {
     const collectedStreamPromise = pipe(
       [],
-      stream => multiparser({ input: stream, boundary }),
+      stream => multerator({ input: stream, boundary }),
       collectMultipartStream
     );
 
@@ -31,7 +31,7 @@ describe('Missing closing boundary', () => {
         '',
       ],
       prepareMultipartIterator,
-      stream => multiparser({ input: stream, boundary }),
+      stream => multerator({ input: stream, boundary }),
       collectMultipartStream
     );
 
@@ -49,7 +49,7 @@ describe('Missing closing boundary', () => {
         `Content-Disposition: form-data; name="my_binary_field"; filename="my_fi`,
       ],
       prepareMultipartIterator,
-      stream => multiparser({ input: stream, boundary }),
+      stream => multerator({ input: stream, boundary }),
       collectMultipartStream
     );
 
@@ -70,7 +70,7 @@ describe('Missing closing boundary', () => {
         'data data data data data data data data',
       ],
       prepareMultipartIterator,
-      stream => multiparser({ input: stream, boundary }),
+      stream => multerator({ input: stream, boundary }),
       collectMultipartStream
     );
 
@@ -99,7 +99,7 @@ describe('Missing closing boundary', () => {
         halfClosingBoundary,
       ],
       prepareMultipartIterator,
-      stream => multiparser({ input: stream, boundary }),
+      stream => multerator({ input: stream, boundary }),
       collectMultipartStream
     );
 

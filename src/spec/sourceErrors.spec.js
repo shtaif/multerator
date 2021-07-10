@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const multiparser = require('..');
+const multerator = require('..');
 const pipe = require('./utils/pipe');
 const collectMultipartStream = require('./utils/collectMultipartStream');
 const prepareMultipartIterator = require('./utils/prepareMultipartIterator');
@@ -10,7 +10,7 @@ describe('Errors from source stream', () => {
       (async function* () {
         throw plantedSourceError;
       })(),
-      stream => multiparser({ input: stream, boundary }),
+      stream => multerator({ input: stream, boundary }),
       collectMultipartStream
     );
     await expect(resultsPromise).to.eventually.be.rejected.and.deep.equal(
@@ -29,7 +29,7 @@ describe('Errors from source stream', () => {
         );
         throw plantedSourceError;
       })(),
-      stream => multiparser({ input: stream, boundary }),
+      stream => multerator({ input: stream, boundary }),
       collectMultipartStream
     );
     await expect(resultsPromise).to.eventually.be.rejected.and.deep.equal(
@@ -54,7 +54,7 @@ describe('Errors from source stream', () => {
         );
         throw plantedSourceError;
       })(),
-      stream => multiparser({ input: stream, boundary }),
+      stream => multerator({ input: stream, boundary }),
       collectMultipartStream
     );
     await expect(resultsPromise).to.eventually.be.rejected.and.deep.equal(
