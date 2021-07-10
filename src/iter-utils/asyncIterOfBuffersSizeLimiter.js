@@ -1,4 +1,4 @@
-const MultiParserError = require('../utils/MultiParserError');
+const MulteratorError = require('../utils/MulteratorError');
 
 module.exports = asyncIterOfBuffersSizeLimiter;
 
@@ -13,7 +13,7 @@ function asyncIterOfBuffersSizeLimiter(sizeLimit) {
     for await (const item of source) {
       sizeCount += item.length;
       if (sizeCount > sizeLimit) {
-        throw new MultiParserError(
+        throw new MulteratorError(
           `Stream crossed max size limit of ${sizeLimit.toLocaleString()} bytes`,
           'ERR_REACHED_SIZE_LIMIT',
           { sizeLimitBytes: sizeLimit }

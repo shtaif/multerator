@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const multiparser = require('..');
+const multerator = require('..');
 const pipe = require('./utils/pipe');
 const collectMultipartStream = require('./utils/collectMultipartStream');
 const prepareMultipartIterator = require('./utils/prepareMultipartIterator');
@@ -8,7 +8,7 @@ it('Returns empty async iterator when given multipart source with zero parts (em
   const results = await pipe(
     ['', `--${boundary}--`, ''],
     prepareMultipartIterator,
-    input => multiparser({ input, boundary }),
+    input => multerator({ input, boundary }),
     collectMultipartStream
   );
 

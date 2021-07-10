@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const multiparser = require('..');
+const multerator = require('..');
 const pipe = require('./utils/pipe');
 const collectMultipartStream = require('./utils/collectMultipartStream');
 const prepareMultipartIterator = require('./utils/prepareMultipartIterator');
@@ -23,7 +23,7 @@ describe('Size limits', () => {
       ],
       prepareMultipartIterator,
       stream =>
-        multiparser({
+        multerator({
           input: stream,
           boundary,
           maxFieldSize: 1024,
@@ -64,7 +64,7 @@ describe('Size limits', () => {
       ],
       prepareMultipartIterator,
       stream =>
-        multiparser({
+        multerator({
           input: stream,
           boundary,
           maxFieldSize: 1024 * 2,

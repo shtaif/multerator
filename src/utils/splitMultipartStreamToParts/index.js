@@ -7,7 +7,7 @@ const allowOneActiveSubIterAtATime = require('../../iter-utils/allowOneActiveSub
 const bufferUntilAccumulatedLength = require('../../iter-utils/bufferUntilAccumulatedLength');
 const prependAsyncIter = require('../../iter-utils/prependAsyncIter');
 const allocUnsafeSlowFromUtf8 = require('../allocUnsafeSlowFromUtf8');
-const MultiParserError = require('../MultiParserError');
+const MulteratorError = require('../MulteratorError');
 const drainIter = require('./drainIter');
 
 module.exports = splitMultipartStreamToParts;
@@ -30,7 +30,7 @@ async function* splitMultipartStreamToParts(source, boundaryToken) {
   ({ done, value: partIter } = await iterOfPartIters.next());
 
   if (done) {
-    throw new MultiParserError(
+    throw new MulteratorError(
       'Invalid multipart payload format; stream ended unexpectedly without a closing boundary',
       'ERR_MISSING_CLOSING_BOUNDARY' // TODO: Verify "closing boundary" is the correct term for that final boundary
     );
@@ -48,7 +48,7 @@ async function* splitMultipartStreamToParts(source, boundaryToken) {
         ({ done, value: partIter } = await iterOfPartIters.next());
 
         if (done) {
-          throw new MultiParserError(
+          throw new MulteratorError(
             'Invalid multipart payload format; stream ended unexpectedly without a closing boundary',
             'ERR_MISSING_CLOSING_BOUNDARY' // TODO: Verify "closing boundary" is the correct term for that final boundary
           );
@@ -63,7 +63,7 @@ async function* splitMultipartStreamToParts(source, boundaryToken) {
     }
 
     // TODO: False boundary occurrence ("\r\n"+boundary to be precise); merge with previous part somehow?... Throw?...
-    throw new MultiParserError(
+    throw new MulteratorError(
       'Invalid multipart payload format; false boundary occurrence - TODO: decide if/how to handle this scenario',
       '......'
     );
@@ -117,7 +117,7 @@ const finalBoundarySuffixBuf = allocUnsafeSlowFromUtf8('--');
 
 //     if (done) {
 //       // TODO: Verify "closing boundary" is the correct term for that final boundary
-//       throw new MultiParserError(
+//       throw new MulteratorError(
 //         'Stream ended unexpectedly without a closing boundary',
 //         'ERR_MISSING_CLOSING_BOUNDARY'
 //       );
@@ -137,7 +137,7 @@ const finalBoundarySuffixBuf = allocUnsafeSlowFromUtf8('--');
 //     }
 
 //     // TODO: False boundary occurrence ("\r\n"+boundary to be precise); merge with previous part somehow?... Throw?...
-//     throw new MultiParserError(
+//     throw new MulteratorError(
 //       'False boundary occurrence - TODO: decide if/how to handle this scenario',
 //       '......'
 //     );

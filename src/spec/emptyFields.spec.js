@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const multiparser = require('..');
+const multerator = require('..');
 const pipe = require('./utils/pipe');
 const collectMultipartStream = require('./utils/collectMultipartStream');
 const prepareMultipartIterator = require('./utils/prepareMultipartIterator');
@@ -25,7 +25,7 @@ describe('Empty fields', () => {
         '', // TODO: Is extra trailing "\r\n" required here?...
       ],
       prepareMultipartIterator,
-      source => multiparser({ input: source, boundary }),
+      source => multerator({ input: source, boundary }),
       collectMultipartStream
     );
 
@@ -62,7 +62,7 @@ describe('Empty fields', () => {
         '', // TODO: Is extra trailing "\r\n" required here?...
       ],
       prepareMultipartIterator,
-      source => multiparser({ input: source, boundary }),
+      source => multerator({ input: source, boundary }),
       collectMultipartStream
     );
 

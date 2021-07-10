@@ -6,7 +6,7 @@ const asyncIterOfBuffersSizeLimiter = require('../../iter-utils/asyncIterOfBuffe
 const concatBufferIterToString = require('../../iter-utils/concatBufferIterToString');
 const allocUnsafeSlowFromUtf8 = require('../allocUnsafeSlowFromUtf8');
 const parsePartHeaders = require('./parsePartHeaders');
-const MultiParserError = require('../MultiParserError');
+const MulteratorError = require('../MulteratorError');
 
 module.exports = parseMultipartPart;
 
@@ -27,7 +27,7 @@ async function parseMultipartPart({
   const { done, value: bodyIter } = await headersAndBodyItersSplit.next();
 
   if (done) {
-    throw new MultiParserError(
+    throw new MulteratorError(
       'Invalid part structure; missing headers-body delimiter token "\r\n\r\n"',
       'ERR_MISSING_PART_HEADERS_BODY_DELIMITER'
     );

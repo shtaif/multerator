@@ -1,4 +1,4 @@
-class MultiParserError extends Error {
+class MulteratorError extends Error {
   constructor(message, code, info) {
     super(message);
     this.code = code;
@@ -8,4 +8,4 @@ class MultiParserError extends Error {
   }
 }
 
-module.exports = MultiParserError;
+module.exports = MulteratorError;
