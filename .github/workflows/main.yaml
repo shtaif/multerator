@@ -14,16 +14,12 @@ jobs:
 
       - uses: actions/setup-node@v2
         with:
-          node-version: '12.18.0'
+          node-version: '10.15.0'
 
       - name: Get Node.js Version
         id: node_version
         run: |
           echo "::set-output name=version::$(node -v)"
-
-      - name: Print "which node"
-        run: |
-          which node
 
       - run: npm install -g yarn
 
