@@ -21,10 +21,6 @@ jobs:
         run: |
           echo "::set-output name=version::$(node -v)"
 
-      - name: Print "which node"
-        run: |
-          which node
-
       - run: npm install -g yarn
 
       - name: Cache Node modules
