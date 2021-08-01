@@ -1,5 +1,5 @@
 const pipe = require('../../../utils/pipe');
-const asyncIterWindowBetweenOccuranceOf = require('../../asyncIterWindowBetweenOccuranceOf');
+const asyncIterWindowBetweenOccuranceOf = require('../../asyncIterWindowBetweenOccuranceOf').default;
 const looseAsyncIterWrapper = require('../../looseAsyncIterWrapper');
 const searchOccurancesInStream = require('../searchOccurancesInStream');
 const visualizeOccurances = require('../../visualizeOccurances');

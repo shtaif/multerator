@@ -1,9 +1,11 @@
-const MulteratorError = require('../utils/MulteratorError');
+import MulteratorError from '../utils/MulteratorError';
 
-module.exports = asyncIterOfBuffersSizeLimiter;
+export default asyncIterOfBuffersSizeLimiter;
 
-function asyncIterOfBuffersSizeLimiter(sizeLimit) {
-  if (!Number.isFinite(sizeLimit)) {
+function asyncIterOfBuffersSizeLimiter(
+  sizeLimit: number | undefined | null
+): (src: AsyncIterable<Buffer>) => AsyncIterable<Buffer> {
+  if (!isFiniteNumberPredicated(sizeLimit)) {
     return source => source;
   }
 
@@ -22,4 +24,8 @@ function asyncIterOfBuffersSizeLimiter(sizeLimit) {
       yield item;
     }
   };
+}
+
+function isFiniteNumberPredicated(num: unknown): num is number {
+  return Number.isFinite(num);
 }

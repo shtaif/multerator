@@ -1,16 +1,16 @@
-const findPartialMatchToTheEnd = require('./findPartialMatchToTheEnd');
-const bufferStartsWith = require('./bufferStartsWith');
-// const findPartialMatchFromStart = require('./findPartialMatchFromStart');
-const findWholeMatches = require('./findWholeMatches');
+import findPartialMatchToTheEnd from './findPartialMatchToTheEnd';
+import bufferStartsWith from './bufferStartsWith';
+// import findPartialMatchFromStart from './findPartialMatchFromStart';
+import findWholeMatches from './findWholeMatches';
 
-module.exports = findPossibleMatchesInBuffer;
+export { findPossibleMatchesInBuffer as default, SequenceOccurancePosition };
 
 // TODO: Test performance of this function returning just an array (with `.push` calls instead of the `yield` statements) instead of being a generator
 function* findPossibleMatchesInBuffer(
-  buf,
-  seqBuf,
-  seqBufInitialCheckOffset = 0
-) {
+  buf: Buffer,
+  seqBuf: Buffer,
+  seqBufInitialCheckOffset: number = 0
+): Generator<SequenceOccurancePosition> {
   let pos = 0;
 
   const possiblyOffsetSeqBuf =
@@ -50,4 +50,9 @@ function* findPossibleMatchesInBuffer(
     const endIdx = -1;
     yield { startIdx, endIdx };
   }
+}
+
+interface SequenceOccurancePosition {
+  startIdx: number;
+  endIdx: number;
 }

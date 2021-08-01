@@ -1,10 +1,10 @@
-module.exports = findPartialMatchToTheEnd;
+export default findPartialMatchToTheEnd;
 
 function findPartialMatchToTheEnd(
-  buffer,
-  sequenceBuf,
-  searchStartIdxOnBuffer = buffer.length - sequenceBuf.length + 1
-) {
+  buffer: Buffer,
+  sequenceBuf: Buffer,
+  searchStartIdxOnBuffer: number = buffer.length - sequenceBuf.length + 1
+): number {
   let matchEndIdx = searchStartIdxOnBuffer;
 
   for (;;) {

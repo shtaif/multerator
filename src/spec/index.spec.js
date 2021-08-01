@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { promisify } = require('util');
 const { expect } = require('chai');
-const multerator = require('..');
+const multerator = require('..').default;
 const pipe = require('./utils/pipe');
 const collectMultipartStream = require('./utils/collectMultipartStream');
 const prepareMultipartIterator = require('./utils/prepareMultipartIterator');

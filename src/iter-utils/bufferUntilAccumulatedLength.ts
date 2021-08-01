@@ -1,8 +1,15 @@
-const bufferUntil = require('./bufferUntil');
+import bufferUntil from './bufferUntil';
+import prependAsyncIter from './prependAsyncIter';
 
-module.exports = bufferUntilAccumulatedLength;
+export default bufferUntilAccumulatedLength;
 
-async function bufferUntilAccumulatedLength(source, targetLength) {
+async function bufferUntilAccumulatedLength(
+  source: AsyncIterable<Buffer>,
+  targetLength: number
+): Promise<{
+  result: Buffer;
+  rest: AsyncIterable<Buffer>;
+}> {
   let totalCollectedLength = 0;
 
   const resultOfBufferUntil = await bufferUntil(
@@ -15,7 +22,10 @@ async function bufferUntilAccumulatedLength(source, targetLength) {
   let rest = resultOfBufferUntil.rest;
 
   if (!bufferedChunks.length) {
-    return { result: Buffer.alloc(0), rest };
+    return {
+      result: Buffer.alloc(0),
+      rest,
+    };
   }
 
   const diffFromTargetLength = totalCollectedLength - targetLength;
@@ -28,19 +38,17 @@ async function bufferUntilAccumulatedLength(source, targetLength) {
 
     bufferedChunks[bufferedChunks.length - 1] = preSplitChunk;
 
-    rest = prependValueToAsyncIter(rest, postSplitChunk);
+    rest = prependAsyncIter(postSplitChunk, rest);
   }
 
   const result = concatBuffers(bufferedChunks);
 
-  return { result, rest };
+  return {
+    result,
+    rest,
+  };
 }
 
-function concatBuffers(buffersArr) {
+function concatBuffers(buffersArr: Buffer[]): Buffer {
   return buffersArr.length === 1 ? buffersArr[0] : Buffer.concat(buffersArr);
-}
-
-async function* prependValueToAsyncIter(source, value) {
-  yield value;
-  yield* source;
 }

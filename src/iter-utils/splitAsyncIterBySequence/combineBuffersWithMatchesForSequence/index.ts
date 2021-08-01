@@ -1,8 +1,18 @@
-const findPossibleMatchesInBuffer = require('./findPossibleMatchesInBuffer');
+import findPossibleMatchesInBuffer, {
+  SequenceOccurancePosition,
+} from './findPossibleMatchesInBuffer';
 
-module.exports = combineBuffersWithMatchesForSequence;
+export {
+  combineBuffersWithMatchesForSequence as default,
+  BufferWithSequenceMatches,
+  SequenceOccurancePosition,
+};
 
-function combineBuffersWithMatchesForSequence(sequenceBuf) {
+function combineBuffersWithMatchesForSequence(
+  sequenceBuf: Buffer
+): (
+  src: AsyncIterable<Buffer>
+) => AsyncGenerator<BufferWithSequenceMatches, void> {
   return async function* (source) {
     let nextSearchStartIdx = 0;
 
@@ -34,4 +44,9 @@ function combineBuffersWithMatchesForSequence(sequenceBuf) {
       yield { buffer, matches };
     }
   };
+}
+
+interface BufferWithSequenceMatches {
+  buffer: Buffer;
+  matches: SequenceOccurancePosition[];
 }

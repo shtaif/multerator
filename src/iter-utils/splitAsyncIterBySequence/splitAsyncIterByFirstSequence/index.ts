@@ -1,29 +1,37 @@
-const pipe = require('../../../utils/pipe');
-const lastElem = require('../../../utils/lastElem');
-const bufferUntil = require('../../bufferUntil');
-const asyncIterWindowBetweenOccuranceOf = require('../../asyncIterWindowBetweenOccuranceOf');
-const combineBuffersWithMatchesForSequence = require('../combineBuffersWithMatchesForSequence');
+import pipe from '../../../utils/pipe';
+import lastElem from '../../../utils/lastElem';
+import bufferUntil from '../../bufferUntil';
+import asyncIterWindowBetweenOccuranceOf from '../../asyncIterWindowBetweenOccuranceOf';
+import combineBuffersWithMatchesForSequence, {
+  BufferWithSequenceMatches,
+} from '../combineBuffersWithMatchesForSequence';
 
-module.exports = splitAsyncIterByFirstSequence;
+export default splitAsyncIterByFirstSequence;
 
-function splitAsyncIterByFirstSequence(originalSource, sequenceBuf) {
+function splitAsyncIterByFirstSequence(
+  originalSource: AsyncIterable<Buffer>,
+  sequenceBuf: Buffer
+): AsyncGenerator<AsyncGenerator<Buffer, void>, void> {
   return pipe(
     originalSource,
     combineBuffersWithMatchesForSequence(sequenceBuf),
-    async function* (source) {
+    async function* (sourceWithMatches) {
       // TODO: Should avoid yielding empty buffers by surrounding each line with a `.subarray` call with an index check?
 
-      const sourceIter = source[Symbol.asyncIterator]();
+      const sourceIter = sourceWithMatches[Symbol.asyncIterator]();
+      let item: BufferWithSequenceMatches;
+      let itemToRefeed: BufferWithSequenceMatches | undefined;
 
-      for (let item, itemToRefeed, done = false; ; ) {
+      for (;;) {
         if (itemToRefeed) {
           item = itemToRefeed;
           itemToRefeed = undefined;
         } else {
-          ({ done, value: item } = await sourceIter.next());
-          if (done) {
+          const iteration = await sourceIter.next();
+          if (iteration.done) {
             break;
           }
+          item = iteration.value;
         }
 
         if (!item.matches.length) {
@@ -78,7 +86,9 @@ function splitAsyncIterByFirstSequence(originalSource, sequenceBuf) {
   );
 }
 
-async function bufferMatchSuccession(sourceIter) {
+async function bufferMatchSuccession(
+  sourceIter: AsyncIterable<BufferWithSequenceMatches>
+): Promise<BufferWithSequenceMatches[]> {
   const result = await bufferUntil(
     sourceIter,
     ({ matches }) =>
@@ -90,4 +100,4 @@ async function bufferMatchSuccession(sourceIter) {
   return itemsOfMatchSuccession;
 }
 
-const splitMarker = {};
+const splitMarker = {} as const;

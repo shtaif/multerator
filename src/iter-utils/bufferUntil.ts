@@ -1,15 +1,19 @@
-module.exports = bufferUntil;
+export default bufferUntil;
 
-async function bufferUntil(
-  source,
-  predicate = () => false,
+async function bufferUntil<T>(
+  source: AsyncIterable<T>,
+  predicate: (val: T) => boolean = defaultPredicate,
   { includeLast = false } = {}
-) {
-  const buffered = [];
+): Promise<{
+  buffered: T[];
+  rest: AsyncIterable<T>;
+  done: boolean;
+}> {
+  const buffered: T[] = [];
   const sourceIter = source[Symbol.asyncIterator]();
 
-  let value;
-  let done;
+  let value: T;
+  let done: boolean | undefined;
 
   for (;;) {
     ({ done, value } = await sourceIter.next());
@@ -35,6 +39,10 @@ async function bufferUntil(
   return {
     buffered,
     rest,
-    done,
+    done: !!done,
   };
+}
+
+function defaultPredicate() {
+  return false;
 }
