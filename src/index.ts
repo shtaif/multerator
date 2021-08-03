@@ -1,10 +1,13 @@
-const pipe = require('./utils/pipe');
-const mapAsyncIter = require('./iter-utils/mapAsyncIter');
-const normalizeInputToAsyncIter = require('./utils/normalizeInputToAsyncIter');
-const splitMultipartStreamToParts = require('./utils/splitMultipartStreamToParts');
-const parseMultipartPart = require('./utils/parseMultipartPart');
+import pipe from './utils/pipe';
+import mapAsyncIter from './iter-utils/mapAsyncIter';
+import normalizeInputToAsyncIter from './utils/normalizeInputToAsyncIter';
+import splitMultipartStreamToParts from './utils/splitMultipartStreamToParts';
+import parseMultipartPart, {
+  FilePartInfo,
+  TextPartInfo,
+} from './utils/parseMultipartPart';
 
-module.exports = multerator;
+export { multerator as default, FilePartInfo, TextPartInfo };
 
 // TODO: For focused testing - several occurances of the search sequence in a row
 // TODO: For focused testing - stream starts with an occurance of search sequence
@@ -23,7 +26,12 @@ async function* multerator({
   boundary,
   maxFileSize = defaultMaxFileSize,
   maxFieldSize = defaultMaxFieldSize,
-} = {}) {
+}: {
+  input: AsyncIterable<Buffer>;
+  boundary: string;
+  maxFileSize?: number;
+  maxFieldSize?: number;
+}) {
   yield* pipe(
     input,
     normalizeInputToAsyncIter,

@@ -1,5 +1,5 @@
 const pipe = require('../../../utils/pipe');
-const lastElem = require('../../../utils/lastElem');
+const lastElem = require('../../../utils/lastElem').default;
 const bufferUntil = require('../../bufferUntil');
 // const visualizeOccurances = require('../visualizeOccurances');
 const combineBuffersWithMatchesForSequence = require('../combineBuffersWithMatchesForSequence');

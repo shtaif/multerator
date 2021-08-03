@@ -1,6 +1,10 @@
-module.exports = findWholeMatches;
+export default findWholeMatches;
 
-function* findWholeMatches(buf, sequenceBuf, startFrom = 0) {
+function* findWholeMatches(
+  buf: Buffer,
+  sequenceBuf: Buffer,
+  startFrom: number = 0
+): Generator<number> {
   let nextStartFrom = startFrom;
 
   for (;;) {

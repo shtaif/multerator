@@ -1,11 +1,16 @@
-const concatBufferIterToString = require('../../iter-utils/concatBufferIterToString');
+import concatBufferIterToString from '../../iter-utils/concatBufferIterToString';
 
-module.exports = parsePartHeaders;
+export default parsePartHeaders;
 
-async function parsePartHeaders(input) {
+async function parsePartHeaders(input: AsyncIterable<Buffer>): Promise<{
+  name: string;
+  contentType: string;
+  encoding: string;
+  filename: string | undefined;
+}> {
   const headersContentString = await concatBufferIterToString(input);
 
-  const headerObj = {};
+  const headerObj: Record<string, string | undefined> = {};
 
   if (headersContentString) {
     headersContentString.split('\r\n').forEach(line => {
@@ -20,13 +25,13 @@ async function parsePartHeaders(input) {
     ? headerObj['Content-Disposition'].split(/; */)
     : [];
 
-  const contentDispositionParams = {};
+  const contentDispositionParams: Record<string, string | undefined> = {};
 
   for (let i = 1; i < contentDispositionParamParts.length; ++i) {
     const part = contentDispositionParamParts[i].trim();
     const idx = part.indexOf('=');
     const key = part.slice(0, idx);
-    // TODO: Devise some check/validation/something to counter mistakes were the quotes are missing or partially missing?
+    // TODO: Devise some check/validation/something to counter mistakes in which the quotes are missing or partially missing?
     const value = part.slice(idx + 2, -1); // The "+ 2" (instead of "+ 1") AND the "-1" are to account for the wrapping literal quotes at either side
     contentDispositionParams[key] = value;
   }
@@ -42,5 +47,3 @@ async function parsePartHeaders(input) {
     encoding,
   };
 }
-
-// Content-Disposition:"form-data; name="1"; filename="swaggerExample.json""

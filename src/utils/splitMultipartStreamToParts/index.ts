@@ -1,40 +1,46 @@
-const pipe = require('../pipe');
-const {
+import pipe from '../pipe';
+import {
   splitAsyncIterBySequence,
   // splitAsyncIterByFirstSequence,
-} = require('../../iter-utils/splitAsyncIterBySequence');
-const allowOneActiveSubIterAtATime = require('../../iter-utils/allowOneActiveSubIterAtATime');
-const bufferUntilAccumulatedLength = require('../../iter-utils/bufferUntilAccumulatedLength');
-const prependAsyncIter = require('../../iter-utils/prependAsyncIter');
-const allocUnsafeSlowFromUtf8 = require('../allocUnsafeSlowFromUtf8');
-const MulteratorError = require('../MulteratorError');
-const drainIter = require('./drainIter');
+} from '../../iter-utils/splitAsyncIterBySequence';
+import allowOneActiveSubIterAtATime from '../../iter-utils/allowOneActiveSubIterAtATime';
+import bufferUntilAccumulatedLength from '../../iter-utils/bufferUntilAccumulatedLength';
+import prependAsyncIter from '../../iter-utils/prependAsyncIter';
+import allocUnsafeSlowFromUtf8 from '../allocUnsafeSlowFromUtf8';
+import MulteratorError from '../MulteratorError';
+import drainIter from './drainIter';
 
-module.exports = splitMultipartStreamToParts;
+export default splitMultipartStreamToParts;
 
-async function* splitMultipartStreamToParts(source, boundaryToken) {
+async function* splitMultipartStreamToParts(
+  source: AsyncIterable<Buffer>,
+  boundaryToken: Buffer | string
+): AsyncGenerator<AsyncGenerator<Buffer, void>> {
   const iterOfPartIters = pipe(
     source,
-    src => prependAsyncIter(Buffer.from('\r\n'), src), // TODO: Revise this work-around of prepending here; will probably FAIL every time there would any kind of preample content!...
+    src => prependAsyncIter(Buffer.from('\r\n'), src), // TODO: Revise this work-around of prepending here; will probably FAIL every time there would be any kind of preample content!...
     src => splitAsyncIterBySequence(src, `\r\n--${boundaryToken}`),
-    allowOneActiveSubIterAtATime
+    src => allowOneActiveSubIterAtATime<Buffer>(src) // TODO: Why must I say `<Buffer>` here?...
   );
 
-  let done = false;
-  let partIter;
+  let partIter: AsyncIterable<Buffer>;
 
-  ({ value: partIter } = await iterOfPartIters.next()); // No need to check `done` since `iterOfPartIters` can never be empty - guaranteed at the minimum to yield one single empty sub iter
+  ({ value: partIter } = (await iterOfPartIters.next()) as IteratorResult<
+    AsyncGenerator<Buffer, void>
+  >); // No need to check `done` since `iterOfPartIters` can never be empty - guaranteed at the minimum to yield one single empty sub iter
 
   await drainIter(partIter); // Drain preamble part...
 
-  ({ done, value: partIter } = await iterOfPartIters.next());
+  const emission = await iterOfPartIters.next();
 
-  if (done) {
+  if (emission.done) {
     throw new MulteratorError(
       'Invalid multipart payload format; stream ended unexpectedly without a closing boundary',
       'ERR_MISSING_CLOSING_BOUNDARY' // TODO: Verify "closing boundary" is the correct term for that final boundary
     );
   }
+
+  partIter = emission.value;
 
   while (1) {
     const result = await bufferUntilAccumulatedLength(partIter, 2);
@@ -45,14 +51,15 @@ async function* splitMultipartStreamToParts(source, boundaryToken) {
       yield (async function* () {
         yield* partIter;
 
-        ({ done, value: partIter } = await iterOfPartIters.next());
-
-        if (done) {
+        const emission = await iterOfPartIters.next();
+        if (emission.done) {
           throw new MulteratorError(
             'Invalid multipart payload format; stream ended unexpectedly without a closing boundary',
             'ERR_MISSING_CLOSING_BOUNDARY' // TODO: Verify "closing boundary" is the correct term for that final boundary
           );
         }
+
+        partIter = emission.value;
       })();
 
       continue;
