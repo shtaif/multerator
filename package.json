@@ -11,10 +11,12 @@
   },
   "scripts": {
     "test": "ts-mocha",
-    "code-check": "yarn run test && tsc --noEmit"
+    "code-check": "yarn run test && tsc --noEmit",
+    "build": "rm -rf ./dist && tsc",
+    "prepublishOnly": "yarn build"
   },
   "files": [
-    "./dist"
+    "dist"
   ],
   "devDependencies": {
     "@tsconfig/node10": "^1.0.8",
