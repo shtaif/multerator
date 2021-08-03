@@ -6,8 +6,7 @@
     "./src/**/*.js"
   ],
   "exclude": [
-    "**/*.spec.ts",
-    "**/*.test.ts"
+    "**/spec/**/*"
   ],
   "compilerOptions": {
     "outDir": "./dist",
