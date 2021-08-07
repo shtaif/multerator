@@ -7,25 +7,26 @@ async function parsePartHeaders(input: AsyncIterable<Buffer>): Promise<{
   contentType: string;
   encoding: string;
   filename: string | undefined;
+  headers: Record<string, string>;
 }> {
   const headersContentString = await concatBufferIterToString(input);
 
-  const headerObj: Record<string, string | undefined> = {};
+  const headerMap: Record<string, string> = {};
 
   if (headersContentString) {
     headersContentString.split('\r\n').forEach(line => {
       const idx = line.indexOf(':');
       let key = line.substring(0, idx).trim();
       let value = line.substring(idx + 1).trim();
-      headerObj[key] = value;
+      headerMap[key] = value;
     });
   }
 
-  const contentDispositionParamParts = headerObj['Content-Disposition']
-    ? headerObj['Content-Disposition'].split(/; */)
+  const contentDispositionParamParts = headerMap['Content-Disposition']
+    ? headerMap['Content-Disposition'].split(/; */)
     : [];
 
-  const contentDispositionParams: Record<string, string | undefined> = {};
+  const contentDispositionParams: Record<string, string> = {};
 
   for (let i = 1; i < contentDispositionParamParts.length; ++i) {
     const part = contentDispositionParamParts[i].trim();
@@ -36,14 +37,15 @@ async function parsePartHeaders(input: AsyncIterable<Buffer>): Promise<{
     contentDispositionParams[key] = value;
   }
 
-  const contentType = headerObj['Content-Type'] || 'text/plain';
+  const contentType = headerMap['Content-Type'] || 'text/plain';
   const { name = '', filename } = contentDispositionParams; // TODO: OK to default `name` to ""? Or should this be an invalidity that should be rejected and errored? Check in the specs...
-  const encoding = headerObj['Content-Transfer-Encoding'] || '7bit';
+  const encoding = headerMap['Content-Transfer-Encoding'] || '7bit';
 
   return {
     name,
     contentType,
     filename,
     encoding,
+    headers: headerMap,
   };
 }
