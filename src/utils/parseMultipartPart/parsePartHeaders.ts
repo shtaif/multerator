@@ -20,6 +20,7 @@ async function parsePartHeaders(input: AsyncIterable<Buffer>): Promise<{
       let value = line.substring(idx + 1).trim();
       headerMap[key] = value;
     });
+    // TODO: Should these collected headers be normalized to lowercase per the specification or so, before further handled below?
   }
 
   const contentDispositionParamParts = headerMap['Content-Disposition']
