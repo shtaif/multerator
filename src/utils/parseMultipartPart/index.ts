@@ -29,7 +29,7 @@ async function parseMultipartPart(input: {
 
   if (expectedBodyEmission.done) {
     throw new MulteratorError(
-      'Invalid part structure; missing headers-body delimiter token "\r\n\r\n"',
+      'Invalid part structure; missing headers-body delimiter token "\\r\\n\\r\\n"',
       'ERR_MISSING_PART_HEADERS_BODY_DELIMITER'
     );
   }

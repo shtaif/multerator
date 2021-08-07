@@ -84,7 +84,7 @@ describe('Missing part headers<->body delimiter', () => {
 const missingHeadersBodyDelimiterErrorRequiredProps = {
   code: 'ERR_MISSING_PART_HEADERS_BODY_DELIMITER',
   message:
-    'Invalid part structure; missing headers-body delimiter token "\r\n\r\n"',
+    'Invalid part structure; missing headers-body delimiter token "\\r\\n\\r\\n"',
 };
 
 const boundary = '--------------------------120789128139917295588288';
