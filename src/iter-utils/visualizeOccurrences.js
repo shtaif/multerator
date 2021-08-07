@@ -1,6 +1,6 @@
-module.exports = visualizeOccurances;
+module.exports = visualizeOccurrences;
 
-async function* visualizeOccurances(source, tag = '') {
+async function* visualizeOccurrences(source, tag = '') {
   if (tag) {
     await stdoutWrite(`${tag}\n`);
   }

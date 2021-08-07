@@ -1,8 +1,8 @@
 import pipe from '../pipe';
 import {
-  splitAsyncIterBySequence,
-  // splitAsyncIterByFirstSequence,
-} from '../../iter-utils/splitAsyncIterBySequence';
+  splitAsyncIterByOccurrence,
+  // splitAsyncIterByOccurrenceOnce,
+} from '../../iter-utils/splitAsyncIterByOccurrence';
 import allowOneActiveSubIterAtATime from '../../iter-utils/allowOneActiveSubIterAtATime';
 import bufferUntilAccumulatedLength from '../../iter-utils/bufferUntilAccumulatedLength';
 import prependAsyncIter from '../../iter-utils/prependAsyncIter';
@@ -19,7 +19,7 @@ async function* splitMultipartStreamToParts(
   const iterOfPartIters = pipe(
     source,
     src => prependAsyncIter(Buffer.from('\r\n'), src), // TODO: Revise this work-around of prepending here; will probably FAIL every time there would be any kind of preample content!...
-    src => splitAsyncIterBySequence(src, `\r\n--${boundaryToken}`),
+    src => splitAsyncIterByOccurrence(src, `\r\n--${boundaryToken}`),
     src => allowOneActiveSubIterAtATime<Buffer>(src) // TODO: Why must I say `<Buffer>` here?...
   );
 
@@ -86,13 +86,13 @@ const finalBoundarySuffixBuf = allocUnsafeSlowFromUtf8('--');
 //   // const iterOfPartIters = pipe(
 //   //   prependAsyncIter(Buffer.from('\r\n'), source),
 //   //   source => {
-//   //     // return splitAsyncIterBySequence2(source, `\r\n--${boundaryToken}`);
-//   //     return splitAsyncIterBySequence(source, `\r\n--${boundaryToken}`);
+//   //     // return splitAsyncIterByOccurrence2(source, `\r\n--${boundaryToken}`);
+//   //     return splitAsyncIterByOccurrence(source, `\r\n--${boundaryToken}`);
 //   //   }
 //   //   // allowOneActiveSubIterAtATime
 //   // );
 
-//   const sourceSplit = splitAsyncIterByFirstSequence(
+//   const sourceSplit = splitAsyncIterByOccurrenceOnce(
 //     source,
 //     Buffer.from(`--${boundaryToken}`)
 //   );
@@ -106,8 +106,8 @@ const finalBoundarySuffixBuf = allocUnsafeSlowFromUtf8('--');
 //   const iterOfPartIters = pipe(
 //     rest,
 //     source => {
-//       // return splitAsyncIterBySequence2(source, `\r\n--${boundaryToken}`);
-//       return splitAsyncIterBySequence(source, `\r\n--${boundaryToken}`);
+//       // return splitAsyncIterByOccurrence2(source, `\r\n--${boundaryToken}`);
+//       return splitAsyncIterByOccurrence(source, `\r\n--${boundaryToken}`);
 //     }
 //     // allowOneActiveSubIterAtATime
 //   );

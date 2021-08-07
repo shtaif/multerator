@@ -1,11 +1,11 @@
-import splitAsyncIterByFirstSequence from '../splitAsyncIterByFirstSequence';
+import splitAsyncIterByOccurrenceOnce from '../splitAsyncIterByOccurrenceOnce';
 
-export default splitAsyncIterBySequence;
+export default splitAsyncIterByOccurrence;
 
-async function* splitAsyncIterBySequence(
+async function* splitAsyncIterByOccurrence(
   source: AsyncIterable<Buffer>,
   sequence: Buffer | string
-): AsyncGenerator<AsyncGenerator<Buffer>> {
+): AsyncGenerator<AsyncGenerator<Buffer, void>, void> {
   // TODO: Probably need to move the `allowOneActivePartAtATime2` function call to here...
   // TODO: Mormalize input sequence here or in consumer's side? e.g: const sequenceBuf = sequence.constructor === Buffer ? sequence : Buffer.from(sequence);
 
@@ -16,7 +16,7 @@ async function* splitAsyncIterBySequence(
   let rest = source;
 
   for (;;) {
-    const restSplit = splitAsyncIterByFirstSequence(rest, sequenceBuf);
+    const restSplit = splitAsyncIterByOccurrenceOnce(rest, sequenceBuf);
 
     const chunksUntilMatch = await restSplit.next();
 

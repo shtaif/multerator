@@ -1,12 +1,13 @@
 const pipe = require('../../../utils/pipe');
-const asyncIterWindowBetweenOccuranceOf = require('../../asyncIterWindowBetweenOccuranceOf').default;
+const asyncIterWindowBetweenOccurrenceOf =
+  require('../../asyncIterWindowBetweenOccurrenceOf').default;
 const looseAsyncIterWrapper = require('../../looseAsyncIterWrapper');
-const searchOccurancesInStream = require('../searchOccurancesInStream');
-const visualizeOccurances = require('../../visualizeOccurances');
+const searchOccurrencesInStream = require('../searchOccurrencesInStream');
+const visualizeOccurrences = require('../../visualizeOccurrences');
 
-module.exports = splitAsyncIterBySequence2;
+module.exports = splitAsyncIterByOccurrence2;
 
-function splitAsyncIterBySequence2(source, sequence) {
+function splitAsyncIterByOccurrence2(source, sequence) {
   const sequenceBuf =
     sequence.constructor === Buffer ? sequence : Buffer.from(sequence);
 
@@ -17,8 +18,8 @@ function splitAsyncIterBySequence2(source, sequence) {
 
   const result = pipe(
     source,
-    source => searchOccurancesInStream(source, sequenceBuf),
-    // source => visualizeOccurances(source, 'TEST AFTER'),
+    source => searchOccurrencesInStream(source, sequenceBuf),
+    // source => visualizeOccurrences(source, 'TEST AFTER'),
     async function* (source) {
       for await (const { buffer, matches } of source) {
         bufferToRestoreFrom = buffer;
@@ -85,7 +86,7 @@ function splitAsyncIterBySequence2(source, sequence) {
 
     //   console.log('TEST ***\n', test);
     // },
-    asyncIterWindowBetweenOccuranceOf(splitMarker)
+    asyncIterWindowBetweenOccurrenceOf(splitMarker)
   );
 
   // TODO: Try to complete this approach to have the `rest` here valid to move over to at any given point, and consider whether is simpler in design and performance...

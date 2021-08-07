@@ -1,16 +1,16 @@
 const pipe = require('../../../utils/pipe');
 const lastElem = require('../../../utils/lastElem').default;
 const bufferUntil = require('../../bufferUntil');
-// const visualizeOccurances = require('../visualizeOccurances');
+// const visualizeOccurrences = require('../visualizeOccurrences');
 const combineBuffersWithMatchesForSequence = require('../combineBuffersWithMatchesForSequence');
 
-module.exports = searchOccurancesInStream;
+module.exports = searchOccurrencesInStream;
 
-function searchOccurancesInStream(source, sequenceBuf) {
+function searchOccurrencesInStream(source, sequenceBuf) {
   return pipe(
     source,
     combineBuffersWithMatchesForSequence(sequenceBuf),
-    // source => visualizeOccurances(source, '<<<<<<TEST BEFORE>>>>>>'),
+    // source => visualizeOccurrences(source, '<<<<<<TEST BEFORE>>>>>>'),
     async function* (source) {
       const sourceIter = source[Symbol.asyncIterator]();
       let itemToRefeed;
@@ -76,7 +76,7 @@ function searchOccurancesInStream(source, sequenceBuf) {
         // sourceIter.return();
       }
     }
-    // source => visualizeOccurances(source, '<<<<<<TEST AFTER>>>>>>')
+    // source => visualizeOccurrences(source, '<<<<<<TEST AFTER>>>>>>')
   );
 }
 
