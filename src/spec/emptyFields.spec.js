@@ -25,18 +25,17 @@ describe('Empty fields', () => {
         '', // TODO: Is extra trailing "\r\n" required here?...
       ],
       prepareMultipartIterator,
-      source => multerator({ input: source, boundary }),
+      input => multerator({ input, boundary }),
       collectMultipartStream
     );
 
     const myField3 = results[2];
 
-    expect(myField3).to.deep.equal({
+    expect(myField3).to.containSubset({
       type: 'text',
       name: 'my_field_3',
       contentType: 'text/plain',
       filename: undefined,
-      encoding: '7bit',
       data: '',
     });
   });
@@ -62,18 +61,17 @@ describe('Empty fields', () => {
         '', // TODO: Is extra trailing "\r\n" required here?...
       ],
       prepareMultipartIterator,
-      source => multerator({ input: source, boundary }),
+      input => multerator({ input, boundary }),
       collectMultipartStream
     );
 
     const myField3 = results[2];
 
-    expect(myField3).to.deep.equal({
+    expect(myField3).to.containSubset({
       type: 'file',
       name: 'my_field_3',
       contentType: 'application/javascript',
       filename: 'my_file.js',
-      encoding: '7bit',
       data: Buffer.alloc(0),
     });
   });
