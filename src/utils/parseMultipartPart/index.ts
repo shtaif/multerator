@@ -1,5 +1,5 @@
 import pipe from '../pipe';
-import { splitAsyncIterByFirstSequence } from '../../iter-utils/splitAsyncIterBySequence';
+import { splitAsyncIterByOccurrenceOnce } from '../../iter-utils/splitAsyncIterByOccurrence';
 import asyncIterOfBuffersSizeLimiter from '../../iter-utils/asyncIterOfBuffersSizeLimiter';
 import concatBufferIterToString from '../../iter-utils/concatBufferIterToString';
 import allocUnsafeSlowFromUtf8 from '../allocUnsafeSlowFromUtf8';
@@ -15,7 +15,7 @@ async function parseMultipartPart(input: {
 }): Promise<FilePartInfo | TextPartInfo> {
   const { partStream, maxFileSize, maxFieldSize } = input;
 
-  const headersAndBodyItersSplit = splitAsyncIterByFirstSequence(
+  const headersAndBodyItersSplit = splitAsyncIterByOccurrenceOnce(
     partStream,
     headersEndTokenBuf
   );

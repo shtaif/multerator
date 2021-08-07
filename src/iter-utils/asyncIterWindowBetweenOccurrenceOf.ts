@@ -1,6 +1,6 @@
-export default asyncIterWindowBetweenOccuranceOf;
+export default asyncIterWindowBetweenOccurrenceOf;
 
-function asyncIterWindowBetweenOccuranceOf<VAL_T, SPLIT_MARK_T>(
+function asyncIterWindowBetweenOccurrenceOf<VAL_T, SPLIT_MARK_T>(
   valueToSplitBy: SPLIT_MARK_T
 ): (
   src: AsyncIterable<VAL_T | SPLIT_MARK_T>
@@ -15,20 +15,18 @@ function asyncIterWindowBetweenOccuranceOf<VAL_T, SPLIT_MARK_T>(
     try {
       for (;;) {
         yield (async function* () {
-          for (;;) {
-            try {
+          try {
+            for (;;) {
               ({ value, done } = await srcIterator.next());
-            } catch (err) {
-              hasError = true;
-              error = err;
-              throw err;
+              if (value === valueToSplitBy || done) {
+                break;
+              }
+              yield value as VAL_T; // TODO: What do I do about this `as`?...
             }
-
-            if (value === valueToSplitBy || done) {
-              return;
-            }
-
-            yield value as VAL_T; // TODO: What do I do about this `as`?...
+          } catch (err) {
+            hasError = true;
+            error = err;
+            throw err;
           }
         })();
 

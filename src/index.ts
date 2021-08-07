@@ -27,7 +27,7 @@ async function* multerator({
   maxFileSize = defaultMaxFileSize,
   maxFieldSize = defaultMaxFieldSize,
 }: {
-  input: AsyncIterable<Buffer>;
+  input: AsyncIterable<Buffer>; // TODO: Widen the type of this `input` per what the `normalizeInputToAsyncIter` can handle
   boundary: string;
   maxFileSize?: number;
   maxFieldSize?: number;
@@ -52,10 +52,10 @@ const defaultMaxFieldSize = 1024 * 100;
 // async function* multerator2({} = {}) {
 //   const { Readable } = require('stream');
 //   const {
-//     splitAsyncIterBySequence2,
-//     splitAsyncIterBySequence,
-//     splitAsyncIterByFirstSequence,
-//   } = require('./iter-utils/splitAsyncIterBySequence');
+//     splitAsyncIterByOccurance2,
+//     splitAsyncIterByOccurance,
+//     splitAsyncIterByOccuranceOnce,
+//   } = require('./iter-utils/splitAsyncIterByOccurance');
 
 //   yield* [];
 
@@ -80,10 +80,10 @@ const defaultMaxFieldSize = 1024 * 100;
 //     '-',
 //     '-11-1-1-',
 //   ].map(str => Buffer.from(str));
-//   // const res = splitAsyncIterBySequence2(testIter, Buffer.from('--'));
+//   // const res = splitAsyncIterByOccurance2(testIter, Buffer.from('--'));
 //   global.testIter = testIter;
-//   global.splitAsyncIterBySequence2 = splitAsyncIterBySequence2;
-//   global.splitAsyncIterByFirstSequence = splitAsyncIterByFirstSequence;
+//   global.splitAsyncIterByOccurance2 = splitAsyncIterByOccurance2;
+//   global.splitAsyncIterByOccuranceOnce = splitAsyncIterByOccuranceOnce;
 
 //   let arr;
 //   let res;
@@ -91,7 +91,7 @@ const defaultMaxFieldSize = 1024 * 100;
 
 //   arr = [];
 
-//   res = splitAsyncIterBySequence(
+//   res = splitAsyncIterByOccurance(
 //     Readable.from(testIter, { objectMode: false }),
 //     Buffer.from('--')
 //   );
