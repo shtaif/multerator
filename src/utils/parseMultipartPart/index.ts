@@ -12,8 +12,9 @@ async function parseMultipartPart(input: {
   partStream: AsyncIterable<Buffer>;
   maxFileSize?: number;
   maxFieldSize?: number;
+  maxHeadersSize?: number;
 }): Promise<FilePartInfo | TextPartInfo> {
-  const { partStream, maxFileSize, maxFieldSize } = input;
+  const { partStream, maxFileSize, maxFieldSize, maxHeadersSize } = input;
 
   const headersAndBodyItersSplit = splitAsyncIterByOccurrenceOnce(
     partStream,
@@ -23,7 +24,25 @@ async function parseMultipartPart(input: {
   const headersIter = (await headersAndBodyItersSplit.next())
     .value as AsyncGenerator<Buffer, void>; // This iterable is guaranteed to yield an initial item and there's no way have TypeScript know that, so...
 
-  const partInfo = await parsePartHeaders(headersIter); // TODO: Handle having the required "Content-Disposition" header not present?...
+  const partInfo = await pipe(
+    headersIter,
+    asyncIterOfBuffersSizeLimiter(maxHeadersSize),
+    async function* (source) {
+      try {
+        yield* source;
+      } catch (err) {
+        if (err.code === 'ERR_REACHED_SIZE_LIMIT') {
+          throw new MulteratorError(
+            err.message,
+            'ERR_HEADERS_REACHED_SIZE_LIMIT',
+            err.info
+          );
+        }
+        throw err;
+      }
+    },
+    parsePartHeaders
+  ); // TODO: Handle having the required "Content-Disposition" header not present?...
 
   const expectedBodyEmission = await headersAndBodyItersSplit.next();
 
@@ -44,11 +63,14 @@ async function parseMultipartPart(input: {
         yield* source;
       } catch (err) {
         if (err.code === 'ERR_REACHED_SIZE_LIMIT') {
-          err.info.partInfo = {
-            name: partInfo.name,
-            contentType: partInfo.contentType,
-            filename: partInfo.filename,
-          };
+          throw new MulteratorError(err.message, err.code, {
+            ...err.info,
+            partInfo: {
+              name: partInfo.name,
+              contentType: partInfo.contentType,
+              filename: partInfo.filename,
+            },
+          });
         }
         throw err;
       }

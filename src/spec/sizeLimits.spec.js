@@ -1,92 +1,150 @@
 const { expect } = require('chai');
 const multerator = require('..').default;
 const pipe = require('./utils/pipe');
-const collectMultipartStream = require('./utils/collectMultipartStream');
 const prepareMultipartIterator = require('./utils/prepareMultipartIterator');
 
 describe('Size limits', () => {
-  it('Throws size limit error when crossing the defined size limit in a text part', async () => {
-    const collectedStreamPromise = pipe(
+  it('Throws size limit error when text field crosses specified text field size limit', async () => {
+    const gen = pipe(
       [
         `--${boundary}`,
-        'Content-Disposition: form-data; name="binary_field"; filename="my_file.json"',
-        'Content-Type: application/octet-stream',
-        '',
-        'a'.repeat(1025),
-        `--${boundary}`,
-        'Content-Disposition: form-data; name="text_field"',
+        'Content-Disposition: form-data; name="field_1"',
         'Content-Type: text/plain',
         '',
-        'a'.repeat(1025),
+        'a'.repeat(10),
+        `--${boundary}`,
+        'Content-Disposition: form-data; name="field_2"',
+        'Content-Type: text/plain',
+        '',
+        'a'.repeat(11),
         `--${boundary}--`,
-        '', // TODO: Is extra trailing "\r\n" required here?...
       ],
       prepareMultipartIterator,
-      stream =>
+      input =>
         multerator({
-          input: stream,
+          input,
           boundary,
-          maxFieldSize: 1024,
-          maxFileSize: 1024 * 2,
-        }),
-      collectMultipartStream
+          maxFieldSize: 10,
+        })
     );
 
-    await expect(
-      collectedStreamPromise
-    ).to.eventually.be.rejected.and.containSubset({
-      code: 'ERR_REACHED_SIZE_LIMIT',
-      info: {
-        sizeLimitBytes: 1024,
-        partInfo: {
-          name: 'text_field',
-          contentType: 'text/plain',
-          filename: undefined,
+    const firstPart = await gen.next();
+    for await (const _ of firstPart.value.data);
+
+    const secondPartPromise = gen.next();
+
+    await expect(secondPartPromise).to.eventually.be.rejected.and.containSubset(
+      {
+        code: 'ERR_REACHED_SIZE_LIMIT',
+        info: {
+          sizeLimitBytes: 10,
+          partInfo: {
+            name: 'field_2',
+            contentType: 'text/plain',
+            filename: undefined,
+          },
         },
-      },
-    });
+      }
+    );
   });
 
-  it('Throws size limit error when crossing the defined size limit in a file part', async () => {
-    const collectedStreamPromise = pipe(
+  it('Throws size limit error when file field crosses specified file field size limit', async () => {
+    const gen = pipe(
       [
         `--${boundary}`,
-        'Content-Disposition: form-data; name="text_field"',
-        'Content-Type: text/plain',
-        '',
-        'a'.repeat(1025),
-        `--${boundary}`,
-        'Content-Disposition: form-data; name="binary_field"; filename="my_file.json"',
+        'Content-Disposition: form-data; name="field_1"; filename="my_file_1.json"',
         'Content-Type: application/octet-stream',
         '',
-        'a'.repeat(1025),
-        `--${boundary}--`, // TODO: Is extra trailing "\r\n" required here?...
+        'a'.repeat(10),
+        `--${boundary}`,
+        'Content-Disposition: form-data; name="field_2"; filename="my_file_2.json"',
+        'Content-Type: application/octet-stream',
+        '',
+        'a'.repeat(11),
+        `--${boundary}--`,
       ],
       prepareMultipartIterator,
-      stream =>
+      input =>
         multerator({
-          input: stream,
+          input,
           boundary,
-          maxFieldSize: 1024 * 2,
-          maxFileSize: 1024,
-        }),
-      collectMultipartStream
+          maxFileSize: 10,
+        })
     );
 
-    await expect(
-      collectedStreamPromise
-    ).to.eventually.be.rejected.and.containSubset({
-      code: 'ERR_REACHED_SIZE_LIMIT',
-      info: {
-        sizeLimitBytes: 1024,
-        partInfo: {
-          name: 'binary_field',
-          contentType: 'application/octet-stream',
-          filename: 'my_file.json',
+    const firstPart = await gen.next();
+    for await (const _ of firstPart.value.data);
+
+    const secondPartPromise = (async () => {
+      const thirdPart = await gen.next();
+      for await (const _ of thirdPart.value.data);
+    })();
+
+    await expect(secondPartPromise).to.eventually.be.rejected.and.containSubset(
+      {
+        code: 'ERR_REACHED_SIZE_LIMIT',
+        info: {
+          sizeLimitBytes: 10,
+          partInfo: {
+            name: 'field_2',
+            contentType: 'application/octet-stream',
+            filename: 'my_file_2.json',
+          },
         },
-      },
-    });
+      }
+    );
+  });
+
+  it('Throws size limit error when part headers cross specified headers size limit', async () => {
+    const exaggeratedHeaders = [
+      'Content-Disposition: form-data; name="field_2"; filename="my_file_2.json"',
+      'Content-Type: application/octet-stream',
+      'X-My-Custom-Header-1: my_custom_header_1_value',
+      'X-My-Custom-Header-2: my_custom_header_2_value',
+      'X-My-Custom-Header-3: my_custom_header_3_value',
+      'X-My-Custom-Header-4: my_custom_header_4_value',
+    ].join('\r\n');
+
+    const maxHeadersSizeToUse = exaggeratedHeaders.length - 1;
+
+    const gen = pipe(
+      [
+        `--${boundary}`,
+        'Content-Disposition: form-data; name="field_1"; filename="my_file_1.json"',
+        'Content-Type: application/octet-stream',
+        '',
+        'My part body data...',
+        `--${boundary}`,
+        exaggeratedHeaders,
+        '',
+        'My part body data...',
+        `--${boundary}--`,
+      ],
+      prepareMultipartIterator,
+      input =>
+        multerator({
+          input,
+          boundary,
+          maxHeadersSize: maxHeadersSizeToUse,
+        })
+    );
+
+    const firstPart = await gen.next();
+    for await (const _ of firstPart.value.data);
+
+    const secondPartPromise = gen.next(); // (By the time this gets fulfilled, headers should have already been attempted to be parsed)
+
+    await expect(secondPartPromise).to.eventually.be.rejected.and.containSubset(
+      {
+        code: 'ERR_HEADERS_REACHED_SIZE_LIMIT',
+        info: {
+          sizeLimitBytes: maxHeadersSizeToUse,
+        },
+      }
+    );
   });
 });
 
 const boundary = '--------------------------120789128139917295588288';
+
+// TODO: Better error code for the "ERR_REACHED_SIZE_LIMIT" errors?...

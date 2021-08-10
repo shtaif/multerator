@@ -1,4 +1,5 @@
 import concatBufferIterToString from '../../iter-utils/concatBufferIterToString';
+import pipe from '../pipe';
 
 export default parsePartHeaders;
 
