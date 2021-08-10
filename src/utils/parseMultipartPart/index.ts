@@ -12,8 +12,9 @@ async function parseMultipartPart(input: {
   partStream: AsyncIterable<Buffer>;
   maxFileSize?: number;
   maxFieldSize?: number;
+  maxHeadersSize?: number;
 }): Promise<FilePartInfo | TextPartInfo> {
-  const { partStream, maxFileSize, maxFieldSize } = input;
+  const { partStream, maxFileSize, maxFieldSize, maxHeadersSize } = input;
 
   const headersAndBodyItersSplit = splitAsyncIterByOccurrenceOnce(
     partStream,
@@ -23,7 +24,10 @@ async function parseMultipartPart(input: {
   const headersIter = (await headersAndBodyItersSplit.next())
     .value as AsyncGenerator<Buffer, void>; // This iterable is guaranteed to yield an initial item and there's no way have TypeScript know that, so...
 
-  const partInfo = await parsePartHeaders(headersIter); // TODO: Handle having the required "Content-Disposition" header not present?...
+  const partInfo = await parsePartHeaders({
+    headersIter,
+    maxSize: maxHeadersSize,
+  }); // TODO: Handle having the required "Content-Disposition" header not present?...
 
   const expectedBodyEmission = await headersAndBodyItersSplit.next();
 

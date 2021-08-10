@@ -26,11 +26,13 @@ async function* multerator({
   boundary,
   maxFileSize = defaultMaxFileSize,
   maxFieldSize = defaultMaxFieldSize,
+  maxHeadersSize,
 }: {
   input: AsyncIterable<Buffer>; // TODO: Widen the type of this `input` per what the `normalizeInputToAsyncIter` can handle
   boundary: string;
   maxFileSize?: number;
   maxFieldSize?: number;
+  maxHeadersSize?: number;
 }) {
   yield* pipe(
     input,
@@ -41,6 +43,7 @@ async function* multerator({
         partStream: partIter,
         maxFieldSize,
         maxFileSize,
+        maxHeadersSize,
       })
     )
   );
