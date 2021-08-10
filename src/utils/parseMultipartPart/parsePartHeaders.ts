@@ -1,26 +1,16 @@
-import asyncIterOfBuffersSizeLimiter from '../../iter-utils/asyncIterOfBuffersSizeLimiter';
 import concatBufferIterToString from '../../iter-utils/concatBufferIterToString';
 import pipe from '../pipe';
 
 export default parsePartHeaders;
 
-async function parsePartHeaders(input: {
-  headersIter: AsyncIterable<Buffer>;
-  maxSize?: number;
-}): Promise<{
+async function parsePartHeaders(input: AsyncIterable<Buffer>): Promise<{
   name: string;
   contentType: string;
   encoding: string;
   filename: string | undefined;
   headers: Record<string, string>;
 }> {
-  const { headersIter, maxSize } = input;
-
-  const headersContentString = await pipe(
-    headersIter,
-    asyncIterOfBuffersSizeLimiter(maxSize),
-    concatBufferIterToString
-  );
+  const headersContentString = await concatBufferIterToString(input);
 
   const headerMap: Record<string, string> = {};
 

@@ -136,7 +136,7 @@ describe('Size limits', () => {
 
     await expect(secondPartPromise).to.eventually.be.rejected.and.containSubset(
       {
-        code: 'ERR_REACHED_SIZE_LIMIT', // Better name for this size error variation?...
+        code: 'ERR_HEADERS_REACHED_SIZE_LIMIT',
         info: {
           sizeLimitBytes: maxHeadersSizeToUse,
         },
@@ -146,3 +146,5 @@ describe('Size limits', () => {
 });
 
 const boundary = '--------------------------120789128139917295588288';
+
+// TODO: Better error code for the "ERR_REACHED_SIZE_LIMIT" errors?...
