@@ -63,14 +63,18 @@ async function parseMultipartPart(input: {
         yield* source;
       } catch (err) {
         if (err.code === 'ERR_REACHED_SIZE_LIMIT') {
-          throw new MulteratorError(err.message, err.code, {
-            ...err.info,
-            partInfo: {
-              name: partInfo.name,
-              contentType: partInfo.contentType,
-              filename: partInfo.filename,
-            },
-          });
+          throw new MulteratorError(
+            err.message,
+            'ERR_BODY_REACHED_SIZE_LIMIT',
+            {
+              ...err.info,
+              partInfo: {
+                name: partInfo.name,
+                contentType: partInfo.contentType,
+                filename: partInfo.filename,
+              },
+            }
+          );
         }
         throw err;
       }
