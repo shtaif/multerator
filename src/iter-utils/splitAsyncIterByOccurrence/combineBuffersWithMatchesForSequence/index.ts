@@ -77,12 +77,13 @@ function combineBuffersWithMatchesForSequence(
               ...(await bufferMatchSuccession(sourceIter)),
             ];
 
-            const successionLast = lastElem(matchSuccessionItems);
+            const successionLastMatch =
+              lastElem(matchSuccessionItems).matches[0];
 
             if (
-              !successionLast.matches[0] ||
-              successionLast.matches[0].startIdx !== -1 ||
-              successionLast.matches[0].endIdx === -1 // <- Checks whether the whole source was finished in the midst of the match succession
+              !successionLastMatch ||
+              successionLastMatch.startIdx !== -1 ||
+              successionLastMatch.endIdx === -1 // <- Checks whether the whole source was finished in the midst of the match succession
             ) {
               if (matchSuccessionItems.length > 1) {
                 itemToRefeed = matchSuccessionItems.pop();
