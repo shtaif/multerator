@@ -16,7 +16,7 @@ function asyncIterOfBuffersSizeLimiter(
       sizeCount += item.length;
       if (sizeCount > sizeLimit) {
         throw new MulteratorError(
-          `Stream crossed max size limit of ${sizeLimit.toLocaleString()} bytes`,
+          `Crossed max size limit of ${sizeLimit.toLocaleString()} bytes`,
           'ERR_REACHED_SIZE_LIMIT',
           { sizeLimitBytes: sizeLimit }
         );
