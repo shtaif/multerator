@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.1](https://github.com/shtaif/multerator/compare/v0.4.0...v0.4.1) (2021-08-13)
+
+
+### Bug Fixes
+
+* parts can only be resolved one by one ([#18](https://github.com/shtaif/multerator/issues/18)) ([d449ced](https://github.com/shtaif/multerator/commit/d449cedc376354c330433572b6ac24217614bd4a))
+
 ## [0.4.0](https://github.com/shtaif/multerator/compare/v0.3.0...v0.4.0) (2021-08-10)
 
 
