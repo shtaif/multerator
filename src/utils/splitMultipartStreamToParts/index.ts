@@ -12,71 +12,72 @@ import drainIter from './drainIter';
 
 export default splitMultipartStreamToParts;
 
-async function* splitMultipartStreamToParts(
+function splitMultipartStreamToParts(
   source: AsyncIterable<Buffer>,
   boundaryToken: Buffer | string
-): AsyncGenerator<AsyncGenerator<Buffer, void>> {
-  const iterOfPartIters = pipe(
+): AsyncGenerator<AsyncGenerator<Buffer, void>, void> {
+  return pipe(
     source,
     src => prependAsyncIter(Buffer.from('\r\n'), src), // TODO: Revise this work-around of prepending here; will probably FAIL every time there would be any kind of preample content!...
     src => splitAsyncIterByOccurrence(src, `\r\n--${boundaryToken}`),
-    src => allowOneActiveSubIterAtATime<Buffer>(src) // TODO: Why must I say `<Buffer>` here?...
-  );
+    async function* (iterOfPartIters) {
+      let partIter: AsyncIterable<Buffer>;
 
-  let partIter: AsyncIterable<Buffer>;
+      ({ value: partIter } = (await iterOfPartIters.next()) as IteratorResult<
+        AsyncGenerator<Buffer, void>
+      >); // No need to check `done` since `iterOfPartIters` can never be empty - guaranteed at the minimum to yield one single empty sub iter
 
-  ({ value: partIter } = (await iterOfPartIters.next()) as IteratorResult<
-    AsyncGenerator<Buffer, void>
-  >); // No need to check `done` since `iterOfPartIters` can never be empty - guaranteed at the minimum to yield one single empty sub iter
+      await drainIter(partIter); // Drain preamble part...
 
-  await drainIter(partIter); // Drain preamble part...
+      const emission = await iterOfPartIters.next();
 
-  const emission = await iterOfPartIters.next();
+      if (emission.done) {
+        throw new MulteratorError(
+          'Invalid multipart payload format; stream ended unexpectedly without a closing boundary',
+          'ERR_MISSING_CLOSING_BOUNDARY' // TODO: Verify "closing boundary" is the correct term for that final boundary
+        );
+      }
 
-  if (emission.done) {
-    throw new MulteratorError(
-      'Invalid multipart payload format; stream ended unexpectedly without a closing boundary',
-      'ERR_MISSING_CLOSING_BOUNDARY' // TODO: Verify "closing boundary" is the correct term for that final boundary
-    );
-  }
+      partIter = emission.value;
 
-  partIter = emission.value;
+      while (1) {
+        const result = await bufferUntilAccumulatedLength(partIter, 2);
+        const peekedBytes = result.result;
+        partIter = result.rest;
 
-  while (1) {
-    const result = await bufferUntilAccumulatedLength(partIter, 2);
-    const peekedBytes = result.result;
-    partIter = result.rest;
+        if (peekedBytes.equals(interBoundarySuffixBuf)) {
+          yield (async function* () {
+            yield* partIter;
 
-    if (peekedBytes.equals(interBoundarySuffixBuf)) {
-      yield (async function* () {
-        yield* partIter;
+            const emission = await iterOfPartIters.next();
+            if (emission.done) {
+              throw new MulteratorError(
+                'Invalid multipart payload format; stream ended unexpectedly without a closing boundary',
+                'ERR_MISSING_CLOSING_BOUNDARY' // TODO: Verify "closing boundary" is the correct term for that final boundary
+              );
+            }
 
-        const emission = await iterOfPartIters.next();
-        if (emission.done) {
-          throw new MulteratorError(
-            'Invalid multipart payload format; stream ended unexpectedly without a closing boundary',
-            'ERR_MISSING_CLOSING_BOUNDARY' // TODO: Verify "closing boundary" is the correct term for that final boundary
-          );
+            partIter = emission.value;
+          })();
+
+          continue;
         }
 
-        partIter = emission.value;
-      })();
+        if (peekedBytes.equals(finalBoundarySuffixBuf)) {
+          break;
+        }
 
-      continue;
-    }
+        // TODO: False boundary occurrence ("\r\n"+boundary to be precise); merge with previous part somehow?... Throw?...
+        throw new MulteratorError(
+          'Invalid multipart payload format; false boundary occurrence - TODO: decide if/how to handle this scenario',
+          '......'
+        );
+      }
 
-    if (peekedBytes.equals(finalBoundarySuffixBuf)) {
-      break;
-    }
-
-    // TODO: False boundary occurrence ("\r\n"+boundary to be precise); merge with previous part somehow?... Throw?...
-    throw new MulteratorError(
-      'Invalid multipart payload format; false boundary occurrence - TODO: decide if/how to handle this scenario',
-      '......'
-    );
-  }
-
-  await drainIter(partIter); // Drain epilogue part...
+      await drainIter(partIter); // Drain epilogue part...
+    },
+    src => allowOneActiveSubIterAtATime<Buffer>(src) // TODO: Why must I say `<Buffer>` here?...
+  );
 }
 
 const interBoundarySuffixBuf = allocUnsafeSlowFromUtf8('\r\n');
