@@ -1,20 +1,18 @@
 export default allowOneActiveSubIterAtATime;
 
 async function* allowOneActiveSubIterAtATime<T>(
-  source: AsyncIterable<AsyncIterable<T>>
+  sourceIter: AsyncIterable<AsyncIterable<T>>
 ): AsyncGenerator<AsyncGenerator<T>, void, undefined> {
   let promise: Promise<void>;
   let resolve = noop;
 
-  for await (const partIter of source) {
+  for await (const subIter of sourceIter) {
     promise = new Promise(_resolve => (resolve = _resolve));
 
-    const delayedPartIter = (async function* () {
-      yield* partIter;
+    yield (async function* () {
+      yield* subIter;
       resolve();
     })();
-
-    yield delayedPartIter;
 
     await promise;
   }
