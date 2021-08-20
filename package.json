@@ -4,10 +4,7 @@
   "license": "MIT",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "author": {
-    "name": "Dor Shtaif",
-    "email": "dorshtaif@gmail.com"
-  },
+  "author": "Dor Shtaif <dorshtaif@gmail.com>",
   "repository": "https://github.com/shtaif/multerator",
   "engineStrict": true,
   "engines": {
