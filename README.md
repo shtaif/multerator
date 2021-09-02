@@ -67,7 +67,7 @@ expressApp.post('/upload', async (req, res) => {
   const contentType = req.headers['content-type'];
 
   try {
-    if (!contentType && !contentType.startsWith('multipart/form-data')) {
+    if (!contentType.startsWith('multipart/form-data')) {
       throw new Error(
         '😢 Only requests of type multipart/form-data are allowed'
       );
@@ -102,7 +102,6 @@ expressApp.listen(8080, () => console.log('Server listening on 8080'));
 
 ```shell
 curl \
-  -F my_text_field="my text value" \
-  -F my_file_field=@src/spec/mockFiles/image.jpg \
+  -F my_file_field=@image.jpg \
   http://127.0.0.1:8080/upload
 ```
