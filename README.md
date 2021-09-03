@@ -105,3 +105,15 @@ curl \
   -F my_file_field=@image.jpg \
   http://127.0.0.1:8080/upload
 ```
+
+# API
+
+## Input parameters
+| Name | Type | Description |
+| :--- | :--- | :--- |
+| `options` | `object` _(required)_ | |
+| `options.input` | `AsyncIterable<Buffer>`  _(required)_ | Any async iterable of `Buffer` objects such as a Node stream, an async generator and etc. |
+| `options.boundary` | `string` _(required)_ | The boundary token by which to separate parts across the contents of given `options.input`. |
+| `options.maxFileSize` | `number` | Default: _none_. Optional size limit (in bytes) of individual __file parts__. As soon as a file part crosses that, multerator will immediately cut the input data stream and yield an error of type `ERR_BODY_REACHED_SIZE_LIMIT`. |
+| `options.maxFieldSize` | `number` | Default: _none_. Optional size limit (in bytes) of individual __field parts__. As soon as a file part crosses that, multerator will immediately cut the input data stream and yield an error of type `ERR_BODY_REACHED_SIZE_LIMIT`. That's a recommended general safety measure as field part bodies are collected as complete strings in memory which might be unsafe in cases of "unreasonable" data sources. |
+| `options.maxHeadersSize` | `number` | Default: _none_. Optional size limit (in bytes) of all the headers together in any individual part. As soon as a file part crosses that, multerator will immediately cut the input data stream and yield an error of type `ERR_HEADERS_REACHED_SIZE_LIMIT`. That's a recommended general safety measure as field part headers are all parsed into memory which might be unsafe in cases of "unreasonable" data sources. |
