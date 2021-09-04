@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.5.0](https://github.com/shtaif/multerator/compare/v0.4.1...v0.5.0) (2021-09-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* **limits:** remove default limits for now (#21)
+
+### Features
+
+* **limits:** remove default limits for now ([#21](https://github.com/shtaif/multerator/issues/21)) ([ec08893](https://github.com/shtaif/multerator/commit/ec08893ce5cfa5de7fbb999006d6bbfc55bf6fac))
+
 ### [0.4.1](https://github.com/shtaif/multerator/compare/v0.4.0...v0.4.1) (2021-08-13)
 
 
