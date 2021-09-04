@@ -24,8 +24,8 @@ export { multerator as default, FilePartInfo, TextPartInfo };
 async function* multerator({
   input,
   boundary,
-  maxFileSize = defaultMaxFileSize,
-  maxFieldSize = defaultMaxFieldSize,
+  maxFileSize,
+  maxFieldSize,
   maxHeadersSize,
 }: {
   input: AsyncIterable<Buffer>; // TODO: Widen the type of this `input` per what the `normalizeInputToAsyncIter` can handle
@@ -48,9 +48,6 @@ async function* multerator({
     )
   );
 }
-
-const defaultMaxFileSize = 1024 ** 2 * 100;
-const defaultMaxFieldSize = 1024 * 100;
 
 // async function* multerator2({} = {}) {
 //   const { Readable } = require('stream');
