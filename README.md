@@ -2,6 +2,8 @@
 
 Multerator (short for _multipart-iterator_) is a `multipart/form-data` parser for Node.js.
 
+Compatible for Node.js versions >= `10.21.0`.
+
 This is an initial README and more documentation will be eventually added.
 
 # Installation
