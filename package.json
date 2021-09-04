@@ -8,7 +8,7 @@
   "repository": "https://github.com/shtaif/multerator",
   "engineStrict": true,
   "engines": {
-    "node": ">=10.15.0"
+    "node": ">=10.21.0"
   },
   "scripts": {
     "test": "ts-mocha",
