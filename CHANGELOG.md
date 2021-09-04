@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.2](https://github.com/shtaif/multerator/compare/v0.5.1...v0.5.2) (2021-09-04)
+
+
+### Bug Fixes
+
+* **supported-node-versions:** fix supported node version range from ">=10.15.0" to ">=10.21.0" ([#23](https://github.com/shtaif/multerator/issues/23)) ([971936a](https://github.com/shtaif/multerator/commit/971936a3da298c86f2b506213afc0e5b6b16838f))
+
 ### [0.5.1](https://github.com/shtaif/multerator/compare/v0.5.0...v0.5.1) (2021-09-04)
 
 ## [0.5.0](https://github.com/shtaif/multerator/compare/v0.4.1...v0.5.0) (2021-09-04)
