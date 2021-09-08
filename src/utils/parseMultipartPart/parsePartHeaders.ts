@@ -1,5 +1,4 @@
 import concatBufferIterToString from '../../iter-utils/concatBufferIterToString';
-import pipe from '../pipe';
 
 export default parsePartHeaders;
 
@@ -15,12 +14,15 @@ async function parsePartHeaders(input: AsyncIterable<Buffer>): Promise<{
   const headerMap: Record<string, string> = {};
 
   if (headersContentString) {
-    headersContentString.split('\r\n').forEach(line => {
-      const idx = line.indexOf(':');
-      let key = line.substring(0, idx).trim();
-      let value = line.substring(idx + 1).trim();
-      headerMap[key] = value;
-    });
+    headersContentString
+      .trim()
+      .split('\r\n')
+      .forEach(line => {
+        const idx = line.indexOf(':');
+        const key = line.substring(0, idx).trim();
+        const value = line.substring(idx + 1).trim();
+        headerMap[key] = value;
+      });
     // TODO: Should these collected headers be normalized to lowercase per the specification or so, before further handled below?
   }
 
