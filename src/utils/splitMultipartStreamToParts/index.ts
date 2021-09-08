@@ -45,8 +45,9 @@ function splitMultipartStreamToParts(
         const peekedBytes = result.result;
         partIter = result.rest;
 
-        if (peekedBytes.equals(interBoundarySuffixBuf)) {
+        if (peekedBytes.equals(CRLF)) {
           yield (async function* () {
+            yield CRLF;
             yield* partIter;
 
             const emission = await iterOfPartIters.next();
@@ -63,7 +64,7 @@ function splitMultipartStreamToParts(
           continue;
         }
 
-        if (peekedBytes.equals(finalBoundarySuffixBuf)) {
+        if (peekedBytes.equals(finalBoundarySuffix)) {
           break;
         }
 
@@ -80,8 +81,8 @@ function splitMultipartStreamToParts(
   );
 }
 
-const interBoundarySuffixBuf = allocUnsafeSlowFromUtf8('\r\n');
-const finalBoundarySuffixBuf = allocUnsafeSlowFromUtf8('--');
+const CRLF = allocUnsafeSlowFromUtf8('\r\n');
+const finalBoundarySuffix = allocUnsafeSlowFromUtf8('--');
 
 // async function* splitMultipartStreamToParts(source, boundaryToken) {
 //   // const iterOfPartIters = pipe(
@@ -135,11 +136,11 @@ const finalBoundarySuffixBuf = allocUnsafeSlowFromUtf8('--');
 //     const peekedBytes = result.result;
 //     partIter = result.rest;
 
-//     if (peekedBytes.equals(finalBoundarySuffixBuf)) {
+//     if (peekedBytes.equals(finalBoundarySuffix)) {
 //       break;
 //     }
 
-//     if (peekedBytes.equals(interBoundarySuffixBuf)) {
+//     if (peekedBytes.equals(CRLF)) {
 //       yield partIter;
 //       continue;
 //     }
