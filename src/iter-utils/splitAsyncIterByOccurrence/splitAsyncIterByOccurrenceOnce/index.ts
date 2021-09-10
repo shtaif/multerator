@@ -9,7 +9,8 @@ export default splitAsyncIterByOccuranceOnce;
 
 function splitAsyncIterByOccuranceOnce(
   originalSource: AsyncIterable<Buffer>,
-  searchSequence: Buffer
+  searchSequence: Buffer,
+  optionalErrorOnNoOccurrence?: Function
 ): AsyncGenerator<AsyncGenerator<Buffer, void>, void> {
   return pipe(
     originalSource,
@@ -28,6 +29,10 @@ function splitAsyncIterByOccuranceOnce(
             break;
           }
           yield item.buffer;
+        }
+
+        if (!itemWithOccurrence && optionalErrorOnNoOccurrence) {
+          throw optionalErrorOnNoOccurrence();
         }
       })();
 

@@ -1,4 +1,5 @@
 import concatBufferIterToString from '../../iter-utils/concatBufferIterToString';
+import MulteratorError from '../MulteratorError';
 
 export default parsePartHeaders;
 
@@ -19,36 +20,51 @@ async function parsePartHeaders(input: AsyncIterable<Buffer>): Promise<{
       .split('\r\n')
       .forEach(line => {
         const idx = line.indexOf(':');
-        const key = line.substring(0, idx).trim();
+        const key = line.substring(0, idx).trim(); // TODO: Should these collected headers be normalized to lowercase per the specification or so, before further handled below?
         const value = line.substring(idx + 1).trim();
         headerMap[key] = value;
       });
-    // TODO: Should these collected headers be normalized to lowercase per the specification or so, before further handled below?
   }
 
-  const contentDispositionParamParts = headerMap['Content-Disposition']
+  const contentDispositionParts = headerMap['Content-Disposition']
     ? headerMap['Content-Disposition'].split(/; */)
     : [];
 
-  const contentDispositionParams: Record<string, string> = {};
+  const contentDispositionValue = contentDispositionParts[0];
 
-  for (let i = 1; i < contentDispositionParamParts.length; ++i) {
-    const part = contentDispositionParamParts[i].trim();
+  const contentDispositionEntries: Record<string, string> = {};
+
+  for (let i = 1; i < contentDispositionParts.length; ++i) {
+    const part = contentDispositionParts[i].trim();
     const idx = part.indexOf('=');
     const key = part.slice(0, idx);
     // TODO: Devise some check/validation/something to counter mistakes in which the quotes are missing or partially missing?
     const value = part.slice(idx + 2, -1); // The "+ 2" (instead of "+ 1") AND the "-1" are to account for the wrapping literal quotes at either side
-    contentDispositionParams[key] = value;
+    contentDispositionEntries[key] = value;
   }
 
   const contentType = headerMap['Content-Type'] || 'text/plain';
-  const { name = '', filename } = contentDispositionParams; // TODO: OK to default `name` to ""? Or should this be an invalidity that should be rejected and errored? Check in the specs...
   const encoding = headerMap['Content-Transfer-Encoding'] || '7bit';
 
+  if (contentDispositionValue !== 'form-data') {
+    throw new MulteratorError(
+      'Encountered a part that is either missing the required Content Disposition header or the header\'s value is not "form-data"',
+      'ERR_INVALID_OR_MISSING_CONTENT_DISPOSITION_HEADER'
+    );
+  }
+
+  // TODO: Is `name` param allowed to appear as an "empty string"?...
+  if (contentDispositionEntries.name === undefined) {
+    throw new MulteratorError(
+      'Encountered a part that is missing the "name" parameter inside it\'s Content Disposition header',
+      'ERR_MISSING_PART_NAME'
+    );
+  }
+
   return {
-    name,
+    name: contentDispositionEntries.name,
     contentType,
-    filename,
+    filename: contentDispositionEntries.filename,
     encoding,
     headers: headerMap,
   };
