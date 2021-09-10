@@ -46,7 +46,7 @@ function splitAsyncIterByOccuranceOnce(
         const bufferAfterOccurrence =
           endIdx !== -1
             ? itemWithOccurrence.buffer.subarray(endIdx)
-            : await (async () => {
+            : ((await (async () => {
                 for await (const item of looseAsyncIterWrapper(
                   sourceWithMatches
                 )) {
@@ -56,11 +56,9 @@ function splitAsyncIterByOccuranceOnce(
                     return buffer.subarray(endIdx);
                   }
                 }
-              })();
+              })()) as Buffer); // Coercing because there's no way to have TypeScript know that the iterated iterable guarantees ending with an item with some item that has `endIdx !== -1`...
 
-        if (bufferAfterOccurrence) {
-          yield bufferAfterOccurrence;
-        }
+        yield bufferAfterOccurrence;
 
         yield* originalSource;
       })();
