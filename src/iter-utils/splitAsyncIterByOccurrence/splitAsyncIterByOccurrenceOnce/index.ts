@@ -1,60 +1,64 @@
 import pipe from '../../../utils/pipe';
 import looseAsyncIterWrapper from '../../looseAsyncIterWrapper';
-import combineBuffersWithMatchesForSequence from '../combineBuffersWithMatchesForSequence';
+import combineBuffersWithMatchesForSequence, {
+  BufferWithSequenceMatches,
+} from '../combineBuffersWithMatchesForSequence';
 import propagateErrorFromAsyncSubIter from './propagateErrorFromAsyncSubIter';
 
 export default splitAsyncIterByOccuranceOnce;
 
 function splitAsyncIterByOccuranceOnce(
   originalSource: AsyncIterable<Buffer>,
-  sequenceBuf: Buffer
+  searchSequence: Buffer
 ): AsyncGenerator<AsyncGenerator<Buffer, void>, void> {
   return pipe(
     originalSource,
-    combineBuffersWithMatchesForSequence(sequenceBuf),
-    looseAsyncIterWrapper,
+    combineBuffersWithMatchesForSequence(searchSequence),
     async function* (sourceWithMatches) {
-      let bufferAfterOccurrence: Buffer | undefined;
-      let foundOccurrence = false;
+      let itemWithOccurrence: BufferWithSequenceMatches | undefined;
 
       yield (async function* () {
-        for await (const item of sourceWithMatches) {
-          if (!item.matches.length) {
-            yield item.buffer;
-            continue;
-          } else {
-            foundOccurrence = true;
-
-            const { startIdx, endIdx } = item.matches[0];
-            const bufferBeforeOccurrence = item.buffer.subarray(0, startIdx);
+        for await (const item of looseAsyncIterWrapper(sourceWithMatches)) {
+          if (item.matches.length) {
+            itemWithOccurrence = item;
+            const { buffer } = itemWithOccurrence;
+            const { startIdx } = itemWithOccurrence.matches[0];
+            const bufferBeforeOccurrence = buffer.subarray(0, startIdx);
             yield bufferBeforeOccurrence;
-
-            bufferAfterOccurrence =
-              endIdx !== -1
-                ? item.buffer.subarray(endIdx)
-                : await (async () => {
-                    for await (const item of sourceWithMatches) {
-                      const { buffer } = item;
-                      const { endIdx } = item.matches[0];
-                      if (endIdx !== -1) {
-                        return buffer.subarray(endIdx);
-                      }
-                    }
-                  })();
-
             break;
           }
+          yield item.buffer;
         }
       })();
 
-      if (foundOccurrence) {
-        yield (async function* () {
-          if (bufferAfterOccurrence) {
-            yield bufferAfterOccurrence;
-          }
-          yield* originalSource;
-        })();
+      if (!itemWithOccurrence) {
+        return;
       }
+
+      yield (async function* () {
+        const { endIdx } = itemWithOccurrence.matches[0];
+
+        const bufferAfterOccurrence =
+          endIdx !== -1
+            ? itemWithOccurrence.buffer.subarray(endIdx)
+            : await (async () => {
+                for await (const item of looseAsyncIterWrapper(
+                  sourceWithMatches
+                )) {
+                  const { buffer } = item;
+                  const { endIdx } = item.matches[0];
+                  if (endIdx !== -1) {
+                    return buffer.subarray(endIdx);
+                  }
+                }
+              })();
+
+        if (bufferAfterOccurrence) {
+          yield bufferAfterOccurrence;
+        }
+
+        yield* originalSource;
+      })();
     },
     splitSource => propagateErrorFromAsyncSubIter(splitSource)
   );
