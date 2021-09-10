@@ -18,11 +18,16 @@ async function parseMultipartPart(input: {
 
   const headersAndBodyItersSplit = splitAsyncIterByOccurrenceOnce(
     partStream,
-    headersEndTokenBuf
+    headersEndTokenBuf,
+    () =>
+      new MulteratorError(
+        'Invalid part structure; missing headers-body delimiter token "\\r\\n\\r\\n"',
+        'ERR_MISSING_PART_HEADERS_BODY_DELIMITER'
+      )
   );
 
   const headersIter = (await headersAndBodyItersSplit.next())
-    .value as AsyncGenerator<Buffer, void>; // This iterable is guaranteed to yield an initial item and there's no way have TypeScript know that, so...
+    .value as AsyncGenerator<Buffer, void>; // Coercing because there's no way to have TypeScript know that this iterable guarantees yielding an initial item...
 
   const partInfo = await pipe(
     headersIter,
@@ -44,17 +49,11 @@ async function parseMultipartPart(input: {
     parsePartHeaders
   ); // TODO: Handle having the required "Content-Disposition" header not present?...
 
-  const expectedBodyEmission = await headersAndBodyItersSplit.next();
-
-  if (expectedBodyEmission.done) {
-    throw new MulteratorError(
-      'Invalid part structure; missing headers-body delimiter token "\\r\\n\\r\\n"',
-      'ERR_MISSING_PART_HEADERS_BODY_DELIMITER'
-    );
-  }
+  const expectedBodyIter = (await headersAndBodyItersSplit.next())
+    .value as AsyncGenerator<Buffer, void>; // Coercing because there's no way to have TypeScript know that this iterable guarantees to only either throw error or yield this item...
 
   const sizeLimitedBody = pipe(
-    expectedBodyEmission.value,
+    expectedBodyIter,
     asyncIterOfBuffersSizeLimiter(
       partInfo.filename ? maxFileSize : maxFieldSize
     ),
