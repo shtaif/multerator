@@ -95,7 +95,6 @@ async function parseMultipartPart(input: {
     name: partInfo.name,
     contentType: partInfo.contentType,
     encoding: partInfo.encoding,
-    headers: partInfo.headers,
   };
 }
 
@@ -117,5 +116,4 @@ interface PartInfoCommon {
   name: string;
   contentType: string;
   encoding: string;
-  headers: Record<string, string>;
 }
