@@ -8,7 +8,6 @@ async function parsePartHeaders(input: AsyncIterable<Buffer>): Promise<{
   contentType: string;
   encoding: string;
   filename: string | undefined;
-  headers: Record<string, string>;
 }> {
   const headersContentString = await concatBufferIterToString(input);
 
@@ -66,6 +65,5 @@ async function parsePartHeaders(input: AsyncIterable<Buffer>): Promise<{
     contentType,
     filename: contentDispositionEntries.filename,
     encoding,
-    headers: headerMap,
   };
 }
