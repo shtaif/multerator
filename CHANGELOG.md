@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.6.0](https://github.com/shtaif/multerator/compare/v0.5.2...v0.6.0) (2021-09-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* content disposition header is now mandatory (#29)
+
+### Features
+
+* accept incoming part headers case-insensitively per spec ([#31](https://github.com/shtaif/multerator/issues/31)) ([54c06c4](https://github.com/shtaif/multerator/commit/54c06c4fa0a5c57c3da6fc27a040cf504c7c7216))
+* content disposition header is now mandatory ([#29](https://github.com/shtaif/multerator/issues/29)) ([5e5a401](https://github.com/shtaif/multerator/commit/5e5a4012c43e65fe240528ed31688d12509550c0))
+
+
+### Bug Fixes
+
+* **part-info-headers:** fix error while parsing a part with empty headers ([#27](https://github.com/shtaif/multerator/issues/27)) ([7c5ad26](https://github.com/shtaif/multerator/commit/7c5ad26f70607da41f3cda8e4223ca61f6dd7b31))
+
 ### [0.5.2](https://github.com/shtaif/multerator/compare/v0.5.1...v0.5.2) (2021-09-04)
 
 
