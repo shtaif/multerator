@@ -19,14 +19,14 @@ async function parsePartHeaders(input: AsyncIterable<Buffer>): Promise<{
       .split('\r\n')
       .forEach(line => {
         const idx = line.indexOf(':');
-        const key = line.substring(0, idx).trim(); // TODO: Should these collected headers be normalized to lowercase per the specification or so, before further handled below?
+        const key = line.substring(0, idx).trim().toLowerCase();
         const value = line.substring(idx + 1).trim();
         headerMap[key] = value;
       });
   }
 
-  const contentDispositionParts = headerMap['Content-Disposition']
-    ? headerMap['Content-Disposition'].split(/; */)
+  const contentDispositionParts = headerMap['content-disposition']
+    ? headerMap['content-disposition'].split(/; */)
     : [];
 
   const contentDispositionValue = contentDispositionParts[0];
@@ -42,8 +42,8 @@ async function parsePartHeaders(input: AsyncIterable<Buffer>): Promise<{
     contentDispositionEntries[key] = value;
   }
 
-  const contentType = headerMap['Content-Type'] || 'text/plain';
-  const encoding = headerMap['Content-Transfer-Encoding'] || '7bit';
+  const contentType = headerMap['content-type'] || 'text/plain';
+  const encoding = headerMap['content-transfer-encoding'] || '7bit';
 
   if (contentDispositionValue !== 'form-data') {
     throw new MulteratorError(
