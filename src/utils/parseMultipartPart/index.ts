@@ -12,9 +12,8 @@ async function parseMultipartPart(input: {
   partStream: AsyncIterable<Buffer>;
   maxFileSize?: number;
   maxFieldSize?: number;
-  maxHeadersSize?: number;
 }): Promise<FilePartInfo | TextPartInfo> {
-  const { partStream, maxFileSize, maxFieldSize, maxHeadersSize } = input;
+  const { partStream, maxFileSize, maxFieldSize } = input;
 
   const headersAndBodyItersSplit = splitAsyncIterByOccurrenceOnce(
     partStream,
@@ -28,10 +27,7 @@ async function parseMultipartPart(input: {
 
   const headersIter = (await headersAndBodyItersSplit.next()).value!; // Asserting as non-null because there's no way to have TypeScript know that this iterable guarantees yielding an initial item...
 
-  const partInfo = await parsePartHeaders({
-    input: headersIter,
-    sizeLimit: maxHeadersSize,
-  });
+  const partInfo = await parsePartHeaders(headersIter);
 
   const expectedBodyIter = (await headersAndBodyItersSplit.next()).value!; // Asserting as non-null because there's no way to have TypeScript know that this iterable guarantees to only either throw error or yield this item...
 
