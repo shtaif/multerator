@@ -95,7 +95,7 @@ describe('Size limits', () => {
     );
   });
 
-  it('Throws size limit error when part headers cross specified headers size limit', async () => {
+  it("Throws size limit error when a part's header section's length crosses limit of 1024 bytes", async () => {
     const exaggeratedHeaders = [
       'Content-Disposition: form-data; name="field_2"; filename="my_file_2.json"',
       'Content-Type: application/octet-stream',
@@ -103,9 +103,22 @@ describe('Size limits', () => {
       'X-My-Custom-Header-2: my_custom_header_2_value',
       'X-My-Custom-Header-3: my_custom_header_3_value',
       'X-My-Custom-Header-4: my_custom_header_4_value',
-    ].join('\r\n');
-
-    const maxHeadersSizeToUse = exaggeratedHeaders.length - 1;
+      'X-My-Custom-Header-5: my_custom_header_5_value',
+      'X-My-Custom-Header-6: my_custom_header_6_value',
+      'X-My-Custom-Header-7: my_custom_header_7_value',
+      'X-My-Custom-Header-8: my_custom_header_8_value',
+      'X-My-Custom-Header-9: my_custom_header_9_value',
+      'X-My-Custom-Header-0: my_custom_header_0_value',
+      'X-My-Custom-Header-1: my_custom_header_1_value',
+      'X-My-Custom-Header-2: my_custom_header_2_value',
+      'X-My-Custom-Header-3: my_custom_header_3_value',
+      'X-My-Custom-Header-4: my_custom_header_4_value',
+      'X-My-Custom-Header-5: my_custom_header_5_value',
+      'X-My-Custom-Header-6: my_custom_header_6_value',
+      'X-My-Custom-Header-7: my_custom_header_7_value',
+      'X-My-Custom-Header-8: my_custom_header_8_value',
+      'X-My-Custom-Header-9: my_custom_header_9_value',
+    ].join('\r\n'); // This whole header section is exactly 1025 bytes long - 1 longer than the allowed max
 
     const gen = pipe(
       [
@@ -125,10 +138,10 @@ describe('Size limits', () => {
         multerator({
           input,
           boundary,
-          maxHeadersSize: maxHeadersSizeToUse,
         })
     );
 
+    // Following consumption of the first part having reasonable headers should complete fine...
     const firstPart = await gen.next();
     for await (const _ of firstPart.value.data);
 
@@ -136,10 +149,7 @@ describe('Size limits', () => {
 
     await expect(secondPartPromise).to.eventually.be.rejected.and.containSubset(
       {
-        code: 'ERR_HEADERS_REACHED_SIZE_LIMIT',
-        info: {
-          sizeLimitBytes: maxHeadersSizeToUse,
-        },
+        code: 'ERR_HEADERS_SECTION_TOO_BIG',
       }
     );
   });

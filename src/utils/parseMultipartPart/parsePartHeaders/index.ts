@@ -10,26 +10,20 @@ import parseRawContentDisposition from './parseRawContentDisposition';
 
 export default parsePartHeaders;
 
-async function parsePartHeaders(params: {
-  input: AsyncIterable<Buffer>;
-  sizeLimit?: number;
-}): Promise<{
+async function parsePartHeaders(input: AsyncIterable<Buffer>): Promise<{
   name: string;
   contentType: string;
   encoding: string;
   filename: string | undefined;
 }> {
-  const { input, sizeLimit } = params;
-
   const combinedChunk = await pipe(
     input,
     asyncIterOfBuffersSizeLimiter(
-      sizeLimit,
-      sizeLimit =>
+      headerSectionMaxTotalSize,
+      () =>
         new MulteratorError(
-          `Crossed max size limit of ${sizeLimit.toLocaleString()} bytes`,
-          'ERR_HEADERS_REACHED_SIZE_LIMIT',
-          { sizeLimitBytes: sizeLimit }
+          `A header section has crossed the internal max size limit of ${headerSectionMaxTotalSize} bytes`,
+          'ERR_HEADERS_SECTION_TOO_BIG'
         )
     ),
     concatAsyncIterOfBuffers // Collecting the whole header section in memory first because experiments have shown that when dealing with the "typical" size header section expected 99% of the time - buffering the whole headers section and then spliting/parsing upon it is MORE performant then splitting it into sub iterables with the existing utilities and continuing from there...
@@ -88,3 +82,5 @@ async function parsePartHeaders(params: {
 
 const CRLF = allocUnsafeSlowFromUtf8('\r\n');
 const colonCharBuffer = allocUnsafeSlowFromUtf8(':');
+
+const headerSectionMaxTotalSize = 1024;
