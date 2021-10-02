@@ -1,12 +1,15 @@
-import MulteratorError from '../utils/MulteratorError';
-
 export default asyncIterOfBuffersSizeLimiter;
 
 function asyncIterOfBuffersSizeLimiter(
-  sizeLimit: number | undefined | null
-): (src: AsyncIterable<Buffer>) => AsyncIterable<Buffer> {
+  sizeLimit: number | undefined | null,
+  customError:
+    | ((sizeLimit: number) => any)
+    | (() => any) = defaultSizeLimitReachedErrorMaker
+): (src: AsyncIterable<Buffer>) => AsyncGenerator<Buffer> {
   if (!isFiniteNumberPredicated(sizeLimit)) {
-    return source => source;
+    return async function* (source) {
+      yield* source;
+    };
   }
 
   return async function* (source) {
@@ -15,11 +18,7 @@ function asyncIterOfBuffersSizeLimiter(
     for await (const item of source) {
       sizeCount += item.length;
       if (sizeCount > sizeLimit) {
-        throw new MulteratorError(
-          `Crossed max size limit of ${sizeLimit.toLocaleString()} bytes`,
-          'ERR_REACHED_SIZE_LIMIT',
-          { sizeLimitBytes: sizeLimit }
-        );
+        throw customError(sizeLimit);
       }
       yield item;
     }
@@ -28,4 +27,10 @@ function asyncIterOfBuffersSizeLimiter(
 
 function isFiniteNumberPredicated(num: unknown): num is number {
   return Number.isFinite(num);
+}
+
+function defaultSizeLimitReachedErrorMaker(sizeLimit: number) {
+  throw new Error(
+    `Crossed max size limit of ${sizeLimit.toLocaleString()} bytes`
+  );
 }

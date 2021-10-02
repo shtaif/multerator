@@ -26,62 +26,37 @@ async function parseMultipartPart(input: {
       )
   );
 
-  const headersIter = (await headersAndBodyItersSplit.next())
-    .value as AsyncGenerator<Buffer, void>; // Coercing because there's no way to have TypeScript know that this iterable guarantees yielding an initial item...
+  const headersIter = (await headersAndBodyItersSplit.next()).value!; // Asserting as non-null because there's no way to have TypeScript know that this iterable guarantees yielding an initial item...
 
-  const partInfo = await pipe(
-    headersIter,
-    asyncIterOfBuffersSizeLimiter(maxHeadersSize),
-    async function* (source) {
-      try {
-        yield* source;
-      } catch (err) {
-        if (err.code === 'ERR_REACHED_SIZE_LIMIT') {
-          throw new MulteratorError(
-            err.message,
-            'ERR_HEADERS_REACHED_SIZE_LIMIT',
-            err.info
-          );
-        }
-        throw err;
-      }
-    },
-    parsePartHeaders
-  ); // TODO: Handle having the required "Content-Disposition" header not present?...
+  const partInfo = await parsePartHeaders({
+    input: headersIter,
+    sizeLimit: maxHeadersSize,
+  });
 
-  const expectedBodyIter = (await headersAndBodyItersSplit.next())
-    .value as AsyncGenerator<Buffer, void>; // Coercing because there's no way to have TypeScript know that this iterable guarantees to only either throw error or yield this item...
+  const expectedBodyIter = (await headersAndBodyItersSplit.next()).value!; // Asserting as non-null because there's no way to have TypeScript know that this iterable guarantees to only either throw error or yield this item...
 
   const sizeLimitedBody = pipe(
     expectedBodyIter,
     asyncIterOfBuffersSizeLimiter(
-      partInfo.filename ? maxFileSize : maxFieldSize
-    ),
-    async function* (source) {
-      try {
-        yield* source;
-      } catch (err) {
-        if (err.code === 'ERR_REACHED_SIZE_LIMIT') {
-          throw new MulteratorError(
-            err.message,
-            'ERR_BODY_REACHED_SIZE_LIMIT',
-            {
-              ...err.info,
-              partInfo: {
-                name: partInfo.name,
-                contentType: partInfo.contentType,
-                filename: partInfo.filename,
-              },
-            }
-          );
-        }
-        throw err;
-      }
-    }
+      partInfo.filename ? maxFileSize : maxFieldSize,
+      sizeLimit =>
+        new MulteratorError(
+          `Crossed max size limit of ${sizeLimit.toLocaleString()} bytes`,
+          'ERR_BODY_REACHED_SIZE_LIMIT',
+          {
+            sizeLimitBytes: sizeLimit,
+            partInfo: {
+              name: partInfo.name,
+              contentType: partInfo.contentType,
+              filename: partInfo.filename,
+            },
+          }
+        )
+    )
   );
 
   return {
-    ...(partInfo.filename
+    ...(partInfo.filename // TODO: Is the `filename` param allowed to be present but empty (e.g `name="something"; filename=""`)?
       ? {
           type: 'file',
           data: sizeLimitedBody,
@@ -89,7 +64,7 @@ async function parseMultipartPart(input: {
         }
       : {
           type: 'text',
-          data: await concatBufferIterToString(sizeLimitedBody),
+          data: await concatBufferIterToString(sizeLimitedBody), // TODO: Need to support some methods of specifying a character set for decoding the text body here, right?
           filename: undefined,
         }),
     name: partInfo.name,
