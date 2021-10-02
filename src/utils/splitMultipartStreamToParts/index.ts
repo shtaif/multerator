@@ -47,7 +47,6 @@ function splitMultipartStreamToParts(
 
         if (peekedBytes.equals(CRLF)) {
           yield (async function* () {
-            yield CRLF;
             yield* partIter;
 
             const emission = await iterOfPartIters.next();
