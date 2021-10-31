@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.8.0](https://github.com/shtaif/multerator/compare/v0.7.0...v0.8.0) (2021-10-31)
+
+
+### ⚠ BREAKING CHANGES
+
+* output streams instead of async iterables (#34)
+
+### Features
+
+* output streams instead of async iterables ([#34](https://github.com/shtaif/multerator/issues/34)) ([84ab352](https://github.com/shtaif/multerator/commit/84ab3520f8120ab3754906283dacc65a979e1b6c))
+
 ## [0.7.0](https://github.com/shtaif/multerator/compare/v0.6.0...v0.7.0) (2021-10-02)
 
 
