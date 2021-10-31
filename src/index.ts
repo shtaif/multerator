@@ -1,5 +1,8 @@
+import { once } from 'events';
+import { Readable } from 'stream';
 import pipe from './utils/pipe';
 import mapAsyncIter from './iter-utils/mapAsyncIter';
+import asyncIterAllowOnlyOneItemAtATime from './iter-utils/asyncIterAllowOnlyOneItemAtATime';
 import normalizeInputToAsyncIter from './utils/normalizeInputToAsyncIter';
 import splitMultipartStreamToParts from './utils/splitMultipartStreamToParts';
 import parseMultipartPart, {
@@ -27,11 +30,11 @@ async function* multerator({
   maxFileSize,
   maxFieldSize,
 }: {
-  input: AsyncIterable<Buffer>; // TODO: Widen the type of this `input` per what the `normalizeInputToAsyncIter` can handle
+  input: Readable | AsyncIterable<Buffer>; // TODO: Widen the type of this `input` per what the `normalizeInputToAsyncIter` can handle
   boundary: string;
   maxFileSize?: number;
   maxFieldSize?: number;
-}) {
+}): AsyncGenerator<FilePartInfo | TextPartInfo, void, undefined> {
   yield* pipe(
     input,
     normalizeInputToAsyncIter,
@@ -42,7 +45,13 @@ async function* multerator({
         maxFieldSize,
         maxFileSize,
       })
-    )
+    ),
+    partInfos =>
+      asyncIterAllowOnlyOneItemAtATime(partInfos, async part => {
+        if (part.type === 'file') {
+          await once(part.data, 'end');
+        }
+      })
   );
 }
 

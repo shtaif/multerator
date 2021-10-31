@@ -114,7 +114,7 @@ curl \
 | Name | Type | Description |
 | :--- | :--- | :--- |
 | `options` | `object` _(required)_ | |
-| `options.input` | `AsyncIterable<Buffer>`  _(required)_ | Any async iterable of `Buffer` objects such as a Node stream, an async generator and etc. |
+| `options.input` | `Readable` \| `AsyncIterable<Buffer>`  _(required)_ | A Readable stream or any async iterable of `Buffer` objects. |
 | `options.boundary` | `string` _(required)_ | The boundary token by which to separate parts across the contents of given `options.input`. |
 | `options.maxFileSize` | `number` | Default: _none_. Optional size limit (in bytes) for individual __file__ part bodies. The moment this limit is reached, multerator will immediately cut the input data stream and yield an error of type `ERR_BODY_REACHED_SIZE_LIMIT`. |
 | `options.maxFieldSize` | `number` | Default: _none_. Optional size limit (in bytes) for individual __field__ part bodies. The moment this limit is reached, multerator will immediately cut the input data stream and yield an error of type `ERR_BODY_REACHED_SIZE_LIMIT`. That's a recommended general safety measure as field part bodies are collected as complete strings in memory which might be unsafe in the case of dealing with an "unreasonable" data source. |
