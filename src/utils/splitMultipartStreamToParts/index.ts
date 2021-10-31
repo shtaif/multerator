@@ -3,7 +3,6 @@ import {
   splitAsyncIterByOccurrence,
   // splitAsyncIterByOccurrenceOnce,
 } from '../../iter-utils/splitAsyncIterByOccurrence';
-import allowOneActiveSubIterAtATime from '../../iter-utils/allowOneActiveSubIterAtATime';
 import bufferUntilAccumulatedLength from '../../iter-utils/bufferUntilAccumulatedLength';
 import prependAsyncIter from '../../iter-utils/prependAsyncIter';
 import allocUnsafeSlowFromUtf8 from '../allocUnsafeSlowFromUtf8';
@@ -75,8 +74,7 @@ function splitMultipartStreamToParts(
       }
 
       await drainIter(partIter); // Drain epilogue part...
-    },
-    src => allowOneActiveSubIterAtATime<Buffer>(src) // TODO: Why must I say `<Buffer>` here?...
+    }
   );
 }
 

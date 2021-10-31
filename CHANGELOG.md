@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.7.0](https://github.com/shtaif/multerator/compare/v0.6.0...v0.7.0) (2021-10-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* **header size limit:** make header section max size restriction be an internal constant with reasonable value rather than be provided by users (#33)
+
+### Features
+
+* **header size limit:** make header section max size restriction be an internal constant with reasonable value rather than be provided by users ([#33](https://github.com/shtaif/multerator/issues/33)) ([ed319d1](https://github.com/shtaif/multerator/commit/ed319d14c072f8384c1a643d3b42848383ea889f))
+
 ## [0.6.0](https://github.com/shtaif/multerator/compare/v0.5.2...v0.6.0) (2021-09-14)
 
 
