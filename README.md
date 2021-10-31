@@ -56,7 +56,7 @@ const multerator = require('multerator').default;
 
 ```js
 const { createWriteStream } = require('fs');
-const { pipeline, Readable } = require('stream');
+const { pipeline } = require('stream');
 const { promisify } = require('util');
 const express = require('express');
 const multerator = require('multerator').default;
@@ -85,7 +85,7 @@ expressApp.post('/upload', async (req, res) => {
           `Incoming upload: field name: ${part.name}, filename: ${part.filename}, content type: ${part.contentType}`
         );
         await pipelinePromisified(
-          Readable.from(part.data),
+          part.data,
           createWriteStream(`${__dirname}/uploads/${part.filename}`)
         );
       }
