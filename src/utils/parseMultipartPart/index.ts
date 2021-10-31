@@ -1,3 +1,4 @@
+import { Readable } from 'stream';
 import pipe from '../pipe';
 import { splitAsyncIterByOccurrenceOnce } from '../../iter-utils/splitAsyncIterByOccurrence';
 import asyncIterOfBuffersSizeLimiter from '../../iter-utils/asyncIterOfBuffersSizeLimiter';
@@ -55,7 +56,10 @@ async function parseMultipartPart(input: {
     ...(partInfo.filename // TODO: Is the `filename` param allowed to be present but empty (e.g `name="something"; filename=""`)?
       ? {
           type: 'file',
-          data: sizeLimitedBody,
+          data: Readable.from(sizeLimitedBody, {
+            objectMode: false,
+            highWaterMark: 0,
+          }),
           filename: partInfo.filename,
         }
       : {
@@ -73,7 +77,7 @@ const headersEndTokenBuf = allocUnsafeSlowFromUtf8('\r\n\r\n');
 
 interface FilePartInfo extends PartInfoCommon {
   type: 'file';
-  data: AsyncGenerator<Buffer>;
+  data: Readable;
   filename: string;
 }
 
