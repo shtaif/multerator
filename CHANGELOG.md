@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.9.0](https://github.com/shtaif/multerator/compare/v0.8.0...v0.9.0) (2021-11-26)
+
+
+### Features
+
+* support more accepted input types ([#36](https://github.com/shtaif/multerator/issues/36)) ([122520b](https://github.com/shtaif/multerator/commit/122520bfbbc834a2965e7d47d543db6d4267b3d6))
+
 ## [0.8.0](https://github.com/shtaif/multerator/compare/v0.7.0...v0.8.0) (2021-10-31)
 
 
