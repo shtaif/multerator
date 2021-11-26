@@ -22,7 +22,8 @@ function prepareMultipartIterator(source, chunkSize = 100) {
         })();
       }
       if (typeof input === 'string') {
-        return [dedent(input).replace(/\n/g, '\r\n')];
+        const inputFormatted = dedent(input).replace(/[^\r]\n/g, '\r\n');
+        return [inputFormatted];
       }
       return input;
     },

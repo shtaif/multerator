@@ -30,7 +30,7 @@ async function* multerator({
   maxFileSize,
   maxFieldSize,
 }: {
-  input: Readable | AsyncIterable<Buffer>; // TODO: Widen the type of this `input` per what the `normalizeInputToAsyncIter` can handle
+  input: Readable | AsyncIterable<Buffer> | Iterable<Buffer> | Buffer | string;
   boundary: string;
   maxFileSize?: number;
   maxFieldSize?: number;
