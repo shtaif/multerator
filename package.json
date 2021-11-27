@@ -12,7 +12,8 @@
   },
   "scripts": {
     "test": "ts-mocha",
-    "release": "standard-version",
+    "release": "./scripts/release.sh",
+    "release___": "standard-version",
     "code-check": "yarn run test && tsc --noEmit",
     "build": "rm -rf ./dist && tsc",
     "prepublishOnly": "yarn build"
