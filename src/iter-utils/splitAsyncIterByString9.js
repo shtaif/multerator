@@ -19,8 +19,8 @@ function splitAsyncIterByString(source, delimiter) {
 
   const splitIter = pipe(
     wrappedSource,
-    async function* (source) {
-      for await (chunk of source) {
+    async function* (src) {
+      for await (chunk of src) {
         if (
           pendingMatchChunks.length &&
           pendingMatchTotalLength + chunk.length >= delimiterBuf.length
@@ -135,8 +135,8 @@ function splitAsyncIterByString(source, delimiter) {
     },
     asyncIterWindow(({ splitAfterThis }) => splitAfterThis, { after: true }),
     mapAsyncIter(async function* (subIter) {
-      for await (const { chunk } of subIter) {
-        yield chunk;
+      for await (const item of subIter) {
+        yield item.chunk;
       }
     })
   );
