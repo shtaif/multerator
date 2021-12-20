@@ -13,7 +13,7 @@
   "scripts": {
     "test": "ts-mocha",
     "release": "./scripts/release.sh",
-    "code-check": "yarn run test && tsc --noEmit",
+    "code-check": "prettier --check \"./src/**/*.{ts,js}\" && eslint ./src --cache && yarn run test && tsc --noEmit",
     "build": "rm -rf ./dist && tsc",
     "prepublishOnly": "yarn build"
   },
