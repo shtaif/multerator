@@ -34,7 +34,7 @@ class SplitableIter {
           } else if (cBufferEqualsSequence(compWindow, sequenceBuf)) {
             skipNextChar = true;
 
-            const startChunk = chunk.subarray(0, i + 1 - delimiterBuf.length);
+            const startChunk = chunk.subarray(0, i + 1 - sequenceBuf.length);
             const endChunk = chunk.subarray(i + 1);
 
             this.chunkToAppendToPrev = startChunk;
@@ -420,7 +420,6 @@ function splitAsyncIterByString2(separatorStr) {
     // let matchStartChunk;
     // let tempChunk;
     let sourceDone = false;
-    let done;
 
     // return yield* sourceIterator;
 
@@ -480,10 +479,8 @@ function splitAsyncIterByString2(separatorStr) {
           //   yield chunk;
           // }
 
-          const {
-            startIdx,
-            matchCharsCount: currMatchCharsCount,
-          } = findStrOverlap(chunk, separatorStr);
+          const { startIdx, matchCharsCount: currMatchCharsCount } =
+            findStrOverlap(chunk, separatorStr);
 
           if (!currMatchCharsCount) {
             yield chunk;
@@ -520,10 +517,6 @@ function splitAsyncIterByString2(separatorStr) {
           //   }
           // }
 
-          function escapeRegExp(string) {
-            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
-          }
-
           const separatorRegex = new RegExp(
             escapeRegExp(`${separatorStr}`, 'g')
           );
@@ -543,4 +536,8 @@ function splitAsyncIterByString2(separatorStr) {
 
     // sourceIterator.return();
   };
+}
+
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }

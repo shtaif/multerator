@@ -18,8 +18,8 @@ function splitAsyncIterByString6(delimiter) {
 
     yield* pipe(
       source,
-      async function* (source) {
-        for await (const chunk of source) {
+      async function* (src) {
+        for await (const chunk of src) {
           yield chunk;
           while (b.length) {
             yield b.shift();
@@ -51,8 +51,8 @@ function splitAsyncIterByString6(delimiter) {
 
         return false;
       }),
-      async function* (source) {
-        for await (const partIter of source) {
+      async function* (src) {
+        for await (const partIter of src) {
           yield (async function* () {
             yield* partIter;
             while (a.length) {

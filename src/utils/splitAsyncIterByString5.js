@@ -1,5 +1,8 @@
 const CBuffer = require('cbuffer');
-const { splitAsyncIter, splitAsyncIter2 } = require('../iter-utils/splitAsyncIter');
+const {
+  splitAsyncIter,
+  splitAsyncIter2,
+} = require('../iter-utils/splitAsyncIter');
 const pipe = require('../pipe');
 const filterAsyncIter = require('../filterAsyncIter');
 const mapAsyncIter = require('../mapAsyncIter');

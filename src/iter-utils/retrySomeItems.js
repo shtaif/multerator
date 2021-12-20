@@ -18,8 +18,8 @@ function retrySomeItems(withModifiedSource, predicate = () => false) {
         }
       })(),
       withModifiedSource,
-      (async function* (source) {
-        for await (const item of source) {
+      (async function* (src) {
+        for await (const item of src) {
           if (predicate(item)) {
             hasItemToRetry = true;
             itemToRetry = item;

@@ -18,10 +18,10 @@ function splitAsyncIterByOccurrence2(source, sequence) {
 
   const result = pipe(
     source,
-    source => searchOccurrencesInStream(source, sequenceBuf),
+    src => searchOccurrencesInStream(src, sequenceBuf),
     // source => visualizeOccurrences(source, 'TEST AFTER'),
-    async function* (source) {
-      for await (const { buffer, matches } of source) {
+    async function* (src) {
+      for await (const { buffer, matches } of src) {
         bufferToRestoreFrom = buffer;
         // posInBufferToRestoreFrom = 0;
 

@@ -11,8 +11,8 @@ function searchOccurrencesInStream(source, sequenceBuf) {
     source,
     combineBuffersWithMatchesForSequence(sequenceBuf),
     // source => visualizeOccurrences(source, '<<<<<<TEST BEFORE>>>>>>'),
-    async function* (source) {
-      const sourceIter = source[Symbol.asyncIterator]();
+    async function* (src) {
+      const sourceIter = src[Symbol.asyncIterator]();
       let itemToRefeed;
 
       try {

@@ -22,8 +22,11 @@ function splitAsyncIter(splitPredicate = () => false) {
             return;
           }
 
-          const { split: shouldSplit, appendToLast, prependToNew } =
-            splitPredicate(chunk) || {};
+          const {
+            split: shouldSplit,
+            appendToLast,
+            prependToNew,
+          } = splitPredicate(chunk) || {};
 
           if (!shouldSplit) {
             yield chunk;
@@ -78,11 +81,11 @@ function splitAsyncIter2(splitPredicate = () => false) {
 
         // sourceIterator.return();
       },
-      async function* (source) {
+      async function* (src) {
         let resolve;
         let promise;
 
-        for await (const partIter of source) {
+        for await (const partIter of src) {
           promise = new Promise(r => (resolve = r));
 
           yield (async function* () {
