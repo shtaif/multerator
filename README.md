@@ -8,9 +8,58 @@ This is an initial README and more documentation will be eventually added.
 
 # Installation
 
+With npm:
+
 ```sh
 npm install multerator
 ```
+
+With yarn:
+
+```sh
+yarn add multerator
+```
+
+# Synopsis
+
+```js
+const multerator = require('multerator').default;
+
+(async () => {
+   // Obtain a multipart data stream:
+  const stream = getSomeMultipartStream();
+  const boundary = '--------------------------120789128139917295588288';
+
+  // Feed it to multerator:
+  const streamParts = multerator({ input: stream, boundary });
+
+  for await (const part of streamParts) {
+    if (part.type === 'text') {
+      console.log(
+        `Got text field "${part.name}" with value "${part.data}"`
+      );
+    } else {
+      console.log(
+        `Got file field "${part.name}" of filename "${part.filename}" with content type "${part.contentType}" and incoming data chunks:`
+      );
+      for await (const chunk of part.data) {
+        console.log(`Received ${chunk.length} bytes`);
+      }
+    }
+  }
+})();
+```
+
+# API
+
+## Input parameters
+| Name | Type | Description |
+| :--- | :--- | :--- |
+| `options` | `object` _(required)_ | |
+| `options.input` | `Readable` \| `AsyncIterable<Buffer>`  _(required)_ | A Readable stream or any async iterable of `Buffer` objects. |
+| `options.boundary` | `string` _(required)_ | The boundary token by which to separate parts across the contents of given `options.input`. |
+| `options.maxFileSize` | `number` | Default: _none_. Optional size limit (in bytes) for individual __file__ part bodies. The moment this limit is reached, multerator will immediately cut the input data stream and yield an error of type `ERR_BODY_REACHED_SIZE_LIMIT`. |
+| `options.maxFieldSize` | `number` | Default: _none_. Optional size limit (in bytes) for individual __field__ part bodies. The moment this limit is reached, multerator will immediately cut the input data stream and yield an error of type `ERR_BODY_REACHED_SIZE_LIMIT`. That's a recommended general safety measure as field part bodies are collected as complete strings in memory which might be unsafe in the case of dealing with an "unreasonable" data source. |
 
 # Usage examples
 
@@ -35,7 +84,7 @@ const multerator = require('multerator').default;
     for await (const part of multerator({ input, boundary })) {
       if (part.type === 'text') {
         console.log(
-          `Got text field "${part.name}" with content type "${part.contentType}" and value "${part.data}"`
+          `Got text field "${part.name}" with value "${part.data}"`
         );
       } else {
         console.log(
@@ -107,14 +156,3 @@ curl \
   -F my_file_field=@image.jpg \
   http://127.0.0.1:8080/upload
 ```
-
-# API
-
-## Input parameters
-| Name | Type | Description |
-| :--- | :--- | :--- |
-| `options` | `object` _(required)_ | |
-| `options.input` | `Readable` \| `AsyncIterable<Buffer>`  _(required)_ | A Readable stream or any async iterable of `Buffer` objects. |
-| `options.boundary` | `string` _(required)_ | The boundary token by which to separate parts across the contents of given `options.input`. |
-| `options.maxFileSize` | `number` | Default: _none_. Optional size limit (in bytes) for individual __file__ part bodies. The moment this limit is reached, multerator will immediately cut the input data stream and yield an error of type `ERR_BODY_REACHED_SIZE_LIMIT`. |
-| `options.maxFieldSize` | `number` | Default: _none_. Optional size limit (in bytes) for individual __field__ part bodies. The moment this limit is reached, multerator will immediately cut the input data stream and yield an error of type `ERR_BODY_REACHED_SIZE_LIMIT`. That's a recommended general safety measure as field part bodies are collected as complete strings in memory which might be unsafe in the case of dealing with an "unreasonable" data source. |
