@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.10.0](https://github.com/shtaif/multerator/compare/v0.9.0...v0.10.0) (2022-02-03)
+
+
+### Features
+
+* improve importability - normal "default"-ish way to import both from TS and from JS  ([#42](https://github.com/shtaif/multerator/issues/42)) ([671b819](https://github.com/shtaif/multerator/commit/671b8191733b7488c706ced35672eb40fb856148))
+
 ## [0.9.0](https://github.com/shtaif/multerator/compare/v0.8.0...v0.9.0) (2021-11-26)
 
 
