@@ -12,6 +12,8 @@ import parseMultipartPart, {
 
 export { multerator as default, FilePartInfo, TextPartInfo };
 
+module.exports = multerator; // To allow importing by simply `const multerator = require('multerator');` inside consuming projects that are plain JavaScript
+
 // TODO: For focused testing - several occurances of the search sequence in a row
 // TODO: For focused testing - stream starts with an occurance of search sequence
 // TODO: For focused testing - stream ends with an occurance of search sequence - occuring either in the end of the final chunk + occuring exactly as the final chunk

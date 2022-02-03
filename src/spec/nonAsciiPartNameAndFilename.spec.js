@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const multerator = require('..').default;
+const multerator = require('..');
 const pipe = require('./utils/pipe');
 const prepareMultipartIterator = require('./utils/prepareMultipartIterator');
 const collectMultipartStream = require('./utils/collectMultipartStream');
