@@ -1,33 +1,76 @@
-import splitAsyncIterByOccurrenceOnce from '../splitAsyncIterByOccurrenceOnce';
+import pipe from '../../../utils/pipe';
+import asyncIterWindow, { windowSplitMark } from '../../asyncIterWindow';
+import findOccurrencesInStream from '../findOccurrencesInStream';
 
 export default splitAsyncIterByOccurrence;
 
 async function* splitAsyncIterByOccurrence(
   source: AsyncIterable<Buffer>,
-  sequence: Buffer | string
+  sequence: Buffer
 ): AsyncGenerator<AsyncGenerator<Buffer, void>, void> {
-  // TODO: Probably need to move the `allowOneActivePartAtATime2` function call to here...
-  // TODO: Mormalize input sequence here or in consumer's side? e.g: const sequenceBuf = sequence.constructor === Buffer ? sequence : Buffer.from(sequence);
+  yield* pipe(
+    source,
+    source => findOccurrencesInStream(source, sequence),
+    async function* (sourceWithMatches) {
+      let currBuf: Buffer;
+      let lastMatchEnd = 0;
 
-  const sequenceBuf = Buffer.isBuffer(sequence)
-    ? sequence
-    : Buffer.from(sequence);
+      try {
+        const firstIteration = await sourceWithMatches.next();
 
-  let rest = source;
+        if (firstIteration.done) {
+          return;
+        }
 
-  for (;;) {
-    const restSplit = splitAsyncIterByOccurrenceOnce(rest, sequenceBuf);
+        currBuf = firstIteration.value as Buffer;
 
-    const chunksUntilMatch = await restSplit.next();
+        for (;;) {
+          const item = await sourceWithMatches.next();
 
-    yield chunksUntilMatch.value as AsyncGenerator<Buffer, void>; // This iterable was guaranteed to yield an initial item and there's no way have TypeScript know that, so...
+          if (item.done) {
+            break;
+          }
 
-    const chunksAfterMatch = await restSplit.next();
+          if (Buffer.isBuffer(item.value)) {
+            const remainderOfPrevBuf = lastMatchEnd
+              ? currBuf.subarray(lastMatchEnd)
+              : currBuf;
+            yield remainderOfPrevBuf;
 
-    if (chunksAfterMatch.done) {
-      break;
-    }
+            currBuf = item.value;
+            lastMatchEnd = 0;
+          } else {
+            const bufBeforeThisAndPrevMatches = currBuf.subarray(
+              lastMatchEnd,
+              item.value.startIdx
+            );
+            yield bufBeforeThisAndPrevMatches;
+            yield windowSplitMark;
 
-    rest = chunksAfterMatch.value;
-  }
+            if (item.value.endIdx !== -1) {
+              lastMatchEnd = item.value.endIdx;
+            } else {
+              for (;;) {
+                const value = (await sourceWithMatches.next()).value!; // `!` is because the iter is guaranteed to not end while we're in the middle of a multi-chunk occurrence...
+                if (Buffer.isBuffer(value)) {
+                  currBuf = value;
+                } else {
+                  lastMatchEnd = value.endIdx;
+                  break;
+                }
+              }
+            }
+          }
+        }
+      } finally {
+        sourceWithMatches.return();
+      }
+
+      const remainderOfPrevBuf = lastMatchEnd
+        ? currBuf.subarray(lastMatchEnd)
+        : currBuf;
+      yield remainderOfPrevBuf;
+    },
+    asyncIterWindow
+  );
 }

@@ -1,8 +1,5 @@
 import pipe from '../pipe';
-import {
-  splitAsyncIterByOccurrence,
-  // splitAsyncIterByOccurrenceOnce,
-} from '../../iter-utils/splitAsyncIterByOccurrence';
+import { splitAsyncIterByOccurrence } from '../../iter-utils/splitAsyncIterByOccurrence';
 import bufferUntilAccumulatedLength from '../../iter-utils/bufferUntilAccumulatedLength';
 import prependAsyncIter from '../../iter-utils/prependAsyncIter';
 import allocUnsafeSlowFromUtf8 from '../allocUnsafeSlowFromUtf8';
@@ -18,7 +15,8 @@ function splitMultipartStreamToParts(
   return pipe(
     source,
     src => prependAsyncIter(Buffer.from('\r\n'), src), // TODO: Revise this work-around of prepending here; will probably FAIL every time there would be any kind of preample content!...
-    src => splitAsyncIterByOccurrence(src, `\r\n--${boundaryToken}`),
+    src =>
+      splitAsyncIterByOccurrence(src, Buffer.from(`\r\n--${boundaryToken}`)),
     async function* (iterOfPartIters) {
       let partIter: AsyncIterable<Buffer>;
 
