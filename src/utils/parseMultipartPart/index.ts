@@ -53,6 +53,9 @@ async function parseMultipartPart(input: {
   );
 
   return {
+    name: partInfo.name,
+    contentType: partInfo.contentType,
+    encoding: partInfo.encoding,
     ...(partInfo.filename // TODO: Is the `filename` param allowed to be present but empty (e.g `name="something"; filename=""`)?
       ? {
           type: 'file',
@@ -67,9 +70,6 @@ async function parseMultipartPart(input: {
           data: await concatBufferIterToString(sizeLimitedBody), // TODO: Need to support some methods of specifying a character set for decoding the text body here, right?
           filename: undefined,
         }),
-    name: partInfo.name,
-    contentType: partInfo.contentType,
-    encoding: partInfo.encoding,
   };
 }
 

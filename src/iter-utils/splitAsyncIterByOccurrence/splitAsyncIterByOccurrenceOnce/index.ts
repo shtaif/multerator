@@ -1,68 +1,82 @@
 import pipe from '../../../utils/pipe';
-import looseAsyncIterWrapper from '../../looseAsyncIterWrapper';
-import combineBuffersWithMatchesForSequence, {
-  BufferWithSequenceMatches,
-} from '../combineBuffersWithMatchesForSequence';
-import propagateErrorFromAsyncSubIter from './propagateErrorFromAsyncSubIter';
+import asyncIterWindow, { windowSplitMark } from '../../asyncIterWindow';
+import findOccurrencesInStream from '../findOccurrencesInStream';
 
-export default splitAsyncIterByOccuranceOnce;
+export default splitAsyncIterByOccurrenceOnce;
 
-function splitAsyncIterByOccuranceOnce(
-  originalSource: AsyncIterable<Buffer>,
-  searchSequence: Buffer,
+async function* splitAsyncIterByOccurrenceOnce(
+  source: AsyncIterable<Buffer>,
+  sequence: Buffer,
   optionalErrorOnNoOccurrence?: Function
 ): AsyncGenerator<AsyncGenerator<Buffer, void>, void> {
-  return pipe(
-    originalSource,
-    combineBuffersWithMatchesForSequence(searchSequence),
+  yield* pipe(
+    source,
+    source => findOccurrencesInStream(source, sequence),
     async function* (sourceWithMatches) {
-      let itemWithOccurrence: BufferWithSequenceMatches | undefined;
+      let currBuf: Buffer;
 
-      yield (async function* () {
-        for await (const item of looseAsyncIterWrapper(sourceWithMatches)) {
-          if (item.matches.length) {
-            itemWithOccurrence = item;
-            const { buffer } = itemWithOccurrence;
-            const { startIdx } = itemWithOccurrence.matches[0];
-            const bufferBeforeOccurrence = buffer.subarray(0, startIdx);
-            yield bufferBeforeOccurrence;
-            break;
+      try {
+        const firstIteration = await sourceWithMatches.next();
+
+        if (firstIteration.done) {
+          return;
+        }
+
+        currBuf = firstIteration.value as Buffer; // First iteration from `findOccurrencesInStream`'s output is guaranteed to be a buffer
+
+        for await (const value of sourceWithMatches) {
+          if (Buffer.isBuffer(value)) {
+            yield currBuf;
+            currBuf = value;
+          } else {
+            const bufBeforeMatch = currBuf.subarray(0, value.startIdx);
+            yield bufBeforeMatch;
+
+            yield windowSplitMark;
+
+            let endingMatchBuf;
+
+            if (value.endIdx !== -1) {
+              endingMatchBuf = currBuf.subarray(value.endIdx);
+            } else {
+              let currBufInMultiBufMatch = currBuf;
+
+              for (;;) {
+                const value = (await sourceWithMatches.next()).value!;
+                if (Buffer.isBuffer(value)) {
+                  currBufInMultiBufMatch = value;
+                } else {
+                  endingMatchBuf = currBufInMultiBufMatch.subarray(
+                    value.endIdx
+                  );
+                  break;
+                }
+              }
+            }
+
+            yield endingMatchBuf;
+            yield* source;
+            return;
           }
-          yield item.buffer;
         }
-
-        if (!itemWithOccurrence && optionalErrorOnNoOccurrence) {
-          throw optionalErrorOnNoOccurrence();
-        }
-      })();
-
-      if (!itemWithOccurrence) {
-        return;
+      } finally {
+        sourceWithMatches.return();
       }
 
-      yield (async function* () {
-        const { endIdx } = itemWithOccurrence.matches[0];
-
-        const bufferAfterOccurrence =
-          endIdx !== -1
-            ? itemWithOccurrence.buffer.subarray(endIdx)
-            : ((await (async () => {
-                for await (const item of looseAsyncIterWrapper(
-                  sourceWithMatches
-                )) {
-                  const { buffer } = item;
-                  const { endIdx } = item.matches[0];
-                  if (endIdx !== -1) {
-                    return buffer.subarray(endIdx);
-                  }
-                }
-              })()) as Buffer); // Coercing because there's no way to have TypeScript know that the iterated iterable guarantees ending with an item with some item that has `endIdx !== -1`...
-
-        yield bufferAfterOccurrence;
-
-        yield* originalSource;
-      })();
+      yield currBuf;
     },
-    splitSource => propagateErrorFromAsyncSubIter(splitSource)
+    !optionalErrorOnNoOccurrence
+      ? partWindows => partWindows
+      : async function* (chunksOrSplit) {
+          for await (const item of chunksOrSplit) {
+            yield item;
+            if (item === windowSplitMark) {
+              yield* chunksOrSplit;
+              return;
+            }
+          }
+          throw optionalErrorOnNoOccurrence();
+        },
+    asyncIterWindow
   );
 }
