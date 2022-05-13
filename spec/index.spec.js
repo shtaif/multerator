@@ -45,7 +45,6 @@ it('General test (TODO: refactor?)', async () => {
       '',
       mockFiles[1],
       `--${boundary}--`,
-      '', // TODO: Is extra trailing "\r\n" required here?...
     ]),
     stream => multerator({ input: stream, boundary }),
     collectMultipartStream
@@ -115,7 +114,6 @@ describe('Variable chunk size mass generated tests (TODO: refactor?)', () => {
           '',
           'data3',
           `--${boundary}--`,
-          '', // TODO: Is extra trailing "\r\n" required here?...
         ],
         input => prepareMultipartIterator(input, chunkSize),
         input => multerator({ input, boundary })

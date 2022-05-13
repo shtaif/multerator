@@ -22,7 +22,6 @@ describe('Empty fields', () => {
         '',
         '',
         `--${boundary}--`,
-        '', // TODO: Is extra trailing "\r\n" required here?...
       ],
       prepareMultipartIterator,
       input => multerator({ input, boundary }),
@@ -58,7 +57,6 @@ describe('Empty fields', () => {
         '',
         Buffer.alloc(0),
         `--${boundary}--`,
-        '', // TODO: Is extra trailing "\r\n" required here?...
       ],
       prepareMultipartIterator,
       input => multerator({ input, boundary }),
