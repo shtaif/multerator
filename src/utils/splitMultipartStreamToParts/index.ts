@@ -24,14 +24,6 @@ async function* splitMultipartStreamToParts(
 
   await drainIter(preambleIter); // Drain preamble part...
 
-  // const restIter = (await sourceSplitAtInitialBoundary.next()).value;
-  // if (!restIter) {
-  //   throw new MulteratorError(
-  //     'Invalid multipart payload format; stream ended unexpectedly without a closing boundary',
-  //     'ERR_MISSING_CLOSING_BOUNDARY' // TODO: Verify "closing boundary" is the correct term for that final boundary
-  //   );
-  // }
-
   const restIter =
     (await sourceSplitAtInitialBoundary.next()).value ||
     (() => {
