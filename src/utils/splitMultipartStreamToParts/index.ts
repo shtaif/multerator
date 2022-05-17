@@ -13,18 +13,16 @@ async function* splitMultipartStreamToParts(
   source: AsyncIterable<Buffer>,
   boundaryToken: Buffer | string
 ): AsyncGenerator<AsyncGenerator<Buffer, void>, void> {
-  let partIter: AsyncIterable<Buffer>;
-
   const sourceSplitAtInitialBoundary = splitAsyncIterByOccurrenceOnce(
     source,
     Buffer.from(`--${boundaryToken}`)
   );
 
-  const preambleIter = (await sourceSplitAtInitialBoundary.next()).value!;
+  const preambleIter = (await sourceSplitAtInitialBoundary.next()).value!; // No need to check `done` since can never be empty - guaranteed at the minimum to yield one single empty sub iter
 
   await drainIter(preambleIter); // Drain preamble part...
 
-  const restIter =
+  const postInitBoundaryIter =
     (await sourceSplitAtInitialBoundary.next()).value ||
     (() => {
       throw new MulteratorError(
@@ -33,12 +31,14 @@ async function* splitMultipartStreamToParts(
       );
     })();
 
-  const iterOfPartIters = splitAsyncIterByOccurrence(
-    restIter,
+  const sourceSplitByBoundariesIter = splitAsyncIterByOccurrence(
+    postInitBoundaryIter,
     Buffer.from(`\r\n--${boundaryToken}`)
   );
 
-  partIter = (await iterOfPartIters.next()).value!; // No need to check `done` since can never be empty - guaranteed at the minimum to yield one single empty sub iter
+  let partIter: AsyncIterable<Buffer>;
+
+  partIter = (await sourceSplitByBoundariesIter.next()).value!; // No need to check `done` since can never be empty - guaranteed at the minimum to yield one single empty sub iter
 
   while (1) {
     const result = await bufferUntilAccumulatedLength(partIter, 2);
@@ -50,7 +50,7 @@ async function* splitMultipartStreamToParts(
         yield* partIter;
 
         partIter =
-          (await iterOfPartIters.next()).value ||
+          (await sourceSplitByBoundariesIter.next()).value ||
           (() => {
             throw new MulteratorError(
               'Invalid multipart payload format; stream ended unexpectedly without a closing boundary',
