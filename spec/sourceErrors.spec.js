@@ -37,7 +37,7 @@ describe('Errors from source stream', () => {
     );
   });
 
-  it('Conveys the error from source stream as-is that was being thrown in the middle of a boundary occurance', async () => {
+  it('Conveys the error from source stream as-is that was being thrown in the middle of a boundary occurrence', async () => {
     const halfInterBoundary = `--${boundary.slice(
       0,
       Math.round(boundary.length / 2)

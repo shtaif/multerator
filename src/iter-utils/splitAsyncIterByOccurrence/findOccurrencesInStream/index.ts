@@ -131,7 +131,7 @@ async function* findOccurrencesInStream(
       }
     }
   } finally {
-    sourceIter.return?.();
+    await sourceIter.return?.();
   }
 
   for (let i = 1; i < currentMultiChunkMatchBufs.length; ++i) {

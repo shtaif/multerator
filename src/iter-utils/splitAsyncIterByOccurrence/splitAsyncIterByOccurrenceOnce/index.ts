@@ -60,7 +60,7 @@ async function* splitAsyncIterByOccurrenceOnce(
           }
         }
       } finally {
-        sourceWithMatches.return();
+        await sourceWithMatches.return();
       }
 
       yield currBuf;
