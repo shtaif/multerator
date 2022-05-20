@@ -63,7 +63,7 @@ async function* splitAsyncIterByOccurrence(
           }
         }
       } finally {
-        sourceWithMatches.return();
+        await sourceWithMatches.return();
       }
 
       const remainderOfPrevBuf = lastMatchEnd

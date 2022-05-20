@@ -36,7 +36,7 @@ async function* asyncIterWindow<VAL_T>(
       }
     }
   } finally {
-    srcIterator.return?.();
+    await srcIterator.return?.();
   }
 }
 
