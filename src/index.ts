@@ -19,8 +19,6 @@ module.exports = multerator; // To allow importing by simply `const multerator =
 // TODO: For focused testing - stream ends with an occurance of search sequence - occuring either in the end of the final chunk + occuring exactly as the final chunk
 // TODO: For focused testing - stream contains empty buffers - either the first chunk, the final chunk, or somewhere in between + multiple empty buffers in a row
 // TODO: Test with ~5000 fields payload to make sure no stack overflow can occure
-// TODO: Test with a stream that ends unexpectedly with no closing boundary emitted
-// TODO: Tests for `normalizeInputToAsyncIter`?...
 // TODO: Should account for presence of a known-ahead Content-Type part header for validating limits, for rejecting earlier?
 // TODO: Refactor/adjust code for adding Node.js 10.x.x support
 // For making a `Readable.from` ponyfill -> https://github.com/nodejs/readable-stream/blob/master/lib/internal/streams/from.js + https://github.com/nodejs/readable-stream/blob/master/errors.js
@@ -56,90 +54,3 @@ async function* multerator({
       })
   );
 }
-
-// async function* multerator2({} = {}) {
-//   const { Readable } = require('stream');
-//   const {
-//     splitAsyncIterByOccurance2,
-//     splitAsyncIterByOccurance,
-//     splitAsyncIterByOccuranceOnce,
-//   } = require('./iter-utils/splitAsyncIterByOccurance');
-
-//   yield* [];
-
-//   function log(value) {
-//     console.log(JSON.stringify(value, null, 2));
-//   }
-
-//   async function getNext(iter) {
-//     const { done, value } = await iter.next();
-//     // return done ? undefined : value + '';
-//     return { done, value: value + '' };
-//   }
-
-//   const testIter = [
-//     '--1',
-//     '23-',
-//     '-45',
-//     '6--',
-//     '789--',
-//     '-',
-//     '-',
-//     '-',
-//     '-11-1-1-',
-//   ].map(str => Buffer.from(str));
-//   // const res = splitAsyncIterByOccurance2(testIter, Buffer.from('--'));
-//   global.testIter = testIter;
-//   global.splitAsyncIterByOccurance2 = splitAsyncIterByOccurance2;
-//   global.splitAsyncIterByOccuranceOnce = splitAsyncIterByOccuranceOnce;
-
-//   let arr;
-//   let res;
-//   let part;
-
-//   arr = [];
-
-//   res = splitAsyncIterByOccurance(
-//     Readable.from(testIter, { objectMode: false }),
-//     Buffer.from('--')
-//   );
-
-//   for await (const part of res) {
-//     console.log('---- START ----');
-//     for await (const chunk of part) {
-//       if (chunk.length) {
-//         console.log(chunk + '');
-//       }
-//     }
-//     // console.log('---- END ----\n');
-//   }
-
-//   throw 'END OF SOURCE STREAM';
-
-//   //   part = await res.next();
-
-//   //   log(await getNext(part.value));
-//   //   log(await getNext(part.value));
-
-//   //   part = await res.next();
-
-//   //   log(await getNext(part.value));
-//   //   log(await getNext(part.value));
-//   //   log(await getNext(part.value));
-
-//   //   part = await res.next();
-
-//   //   console.log('!!!!!!!!!1');
-
-//   //   log(await getNext(part.value));
-//   //   log(await getNext(part.value));
-//   //   log(await getNext(part.value));
-
-//   //   console.log('!!!!!!!!!2');
-
-//   //   part = await res.next();
-
-//   //   log(await getNext(part.value));
-//   //   log(await getNext(part.value));
-//   //   log(await getNext(part.value));
-// }

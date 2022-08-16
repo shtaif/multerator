@@ -1,5 +1,4 @@
 import asyncIterOfBuffersSizeLimiter from '../../../iter-utils/asyncIterOfBuffersSizeLimiter';
-import catchAsyncIterError from '../../../iter-utils/catchAsyncIterError';
 import concatAsyncIterOfBuffers from '../../../iter-utils/concatAsyncIterOfBuffers';
 import allocUnsafeSlowFromUtf8 from '../../allocUnsafeSlowFromUtf8';
 import MulteratorError from '../../MulteratorError';
