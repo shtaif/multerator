@@ -30,7 +30,7 @@ function isFiniteNumberPredicated(num: unknown): num is number {
 }
 
 function defaultSizeLimitReachedErrorMaker(sizeLimit: number) {
-  throw new Error(
+  return new Error(
     `Crossed max size limit of ${sizeLimit.toLocaleString()} bytes`
   );
 }
