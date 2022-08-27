@@ -1,20 +1,50 @@
 import { Readable } from 'stream';
-import pipe from '../pipe';
 import { splitAsyncIterByOccurrenceOnce } from '../../iter-utils/splitAsyncIterByOccurrence';
 import asyncIterOfBuffersSizeLimiter from '../../iter-utils/asyncIterOfBuffersSizeLimiter';
 import concatBufferIterToString from '../../iter-utils/concatBufferIterToString';
+import asyncBufferIterToReadable from '../../iter-utils/asyncBufferIterToReadable';
 import allocUnsafeSlowFromUtf8 from '../allocUnsafeSlowFromUtf8';
-import parsePartHeaders from './parsePartHeaders';
+import pipe from '../pipe';
 import MulteratorError from '../MulteratorError';
+import parsePartHeaders from './parsePartHeaders';
 
-export { parseMultipartPart as default, FilePartInfo, TextPartInfo };
+export {
+  parseMultipartPart as default,
+  IncomingPart,
+  IncomingTextPart,
+  IncomingFilePart,
+};
 
-async function parseMultipartPart(input: {
+async function parseMultipartPart(params: {
   partStream: AsyncIterable<Buffer>;
+  parseTextFields?: true;
   maxFileSize?: number;
   maxFieldSize?: number;
-}): Promise<FilePartInfo | TextPartInfo> {
-  const { partStream, maxFileSize, maxFieldSize } = input;
+}): Promise<IncomingPart<true>>;
+async function parseMultipartPart(params: {
+  partStream: AsyncIterable<Buffer>;
+  parseTextFields: false;
+  maxFileSize?: number;
+  maxFieldSize?: number;
+}): Promise<IncomingPart<false>>;
+async function parseMultipartPart(params: {
+  partStream: AsyncIterable<Buffer>;
+  parseTextFields: boolean;
+  maxFileSize?: number;
+  maxFieldSize?: number;
+}): Promise<IncomingPart>;
+async function parseMultipartPart(params: {
+  partStream: AsyncIterable<Buffer>;
+  parseTextFields?: boolean;
+  maxFileSize?: number;
+  maxFieldSize?: number;
+}): Promise<IncomingPart> {
+  const {
+    partStream,
+    maxFileSize,
+    maxFieldSize,
+    parseTextFields = true,
+  } = params;
 
   const headersAndBodyItersSplit = splitAsyncIterByOccurrenceOnce(
     partStream,
@@ -59,15 +89,14 @@ async function parseMultipartPart(input: {
     ...(partInfo.filename // TODO: Is the `filename` param allowed to be present but empty (e.g `name="something"; filename=""`)?
       ? {
           type: 'file',
-          data: Readable.from(sizeLimitedBody, {
-            objectMode: false,
-            highWaterMark: 0,
-          }),
+          data: asyncBufferIterToReadable(sizeLimitedBody),
           filename: partInfo.filename,
         }
       : {
           type: 'text',
-          data: await concatBufferIterToString(sizeLimitedBody), // TODO: Need to support some methods of specifying a character set for decoding the text body here, right?
+          data: parseTextFields
+            ? await concatBufferIterToString(sizeLimitedBody) // TODO: Need to support some methods of specifying a character set for decoding the text body here, right?
+            : asyncBufferIterToReadable(sizeLimitedBody),
           filename: undefined,
         }),
   };
@@ -75,19 +104,26 @@ async function parseMultipartPart(input: {
 
 const headersEndTokenBuf = allocUnsafeSlowFromUtf8('\r\n\r\n');
 
-interface FilePartInfo extends PartInfoCommon {
+// TODO: Add documentation next to each property in these structures
+
+type IncomingPart<IsTextBodyParsed extends boolean = boolean> =
+  | IncomingTextPart<IsTextBodyParsed>
+  | IncomingFilePart;
+
+interface IncomingTextPart<IsTextBodyParsed extends boolean = boolean>
+  extends IncomingPartBase {
+  type: 'text';
+  data: IsTextBodyParsed extends true ? string : Readable;
+  filename: undefined;
+}
+
+interface IncomingFilePart extends IncomingPartBase {
   type: 'file';
   data: Readable;
   filename: string;
 }
 
-interface TextPartInfo extends PartInfoCommon {
-  type: 'text';
-  data: string;
-  filename: undefined;
-}
-
-interface PartInfoCommon {
+interface IncomingPartBase {
   name: string;
   contentType: string;
   encoding: string;

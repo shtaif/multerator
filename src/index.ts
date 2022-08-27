@@ -5,12 +5,18 @@ import mapAsyncIter from './iter-utils/mapAsyncIter';
 import asyncIterAllowOnlyOneItemAtATime from './iter-utils/asyncIterAllowOnlyOneItemAtATime';
 import normalizeInputToAsyncIter from './utils/normalizeInputToAsyncIter';
 import splitMultipartStreamToParts from './utils/splitMultipartStreamToParts';
-import parseMultipartPart, {
-  FilePartInfo,
-  TextPartInfo,
+import parseMultipartPart2, {
+  IncomingPart,
+  IncomingTextPart,
+  IncomingFilePart,
 } from './utils/parseMultipartPart';
 
-export { multerator as default, FilePartInfo, TextPartInfo };
+export {
+  multerator as default,
+  IncomingPart,
+  IncomingTextPart,
+  IncomingFilePart,
+};
 
 module.exports = multerator; // To allow importing by simply `const multerator = require('multerator');` inside consuming projects that are plain JavaScript
 
@@ -24,24 +30,43 @@ module.exports = multerator; // To allow importing by simply `const multerator =
 // For making a `Readable.from` ponyfill -> https://github.com/nodejs/readable-stream/blob/master/lib/internal/streams/from.js + https://github.com/nodejs/readable-stream/blob/master/errors.js
 // TODO: Should really provide a default for `maxFileSize` and `maxFieldSize`?
 
-async function* multerator({
-  input,
-  boundary,
-  maxFileSize,
-  maxFieldSize,
-}: {
+function multerator(params: {
   input: Readable | AsyncIterable<Buffer> | Iterable<Buffer> | Buffer | string;
   boundary: string;
+  parseTextFields?: true;
   maxFileSize?: number;
   maxFieldSize?: number;
-}): AsyncGenerator<FilePartInfo | TextPartInfo, void, undefined> {
+}): AsyncGenerator<IncomingPart<true>, void, undefined>;
+function multerator(params: {
+  input: Readable | AsyncIterable<Buffer> | Iterable<Buffer> | Buffer | string;
+  boundary: string;
+  parseTextFields: false;
+  maxFileSize?: number;
+  maxFieldSize?: number;
+}): AsyncGenerator<IncomingPart<false>, void, undefined>;
+async function* multerator(params: {
+  input: Readable | AsyncIterable<Buffer> | Iterable<Buffer> | Buffer | string;
+  boundary: string;
+  parseTextFields?: boolean;
+  maxFileSize?: number;
+  maxFieldSize?: number;
+}): AsyncGenerator<IncomingPart, void, undefined> {
+  const {
+    input,
+    boundary,
+    maxFileSize,
+    maxFieldSize,
+    parseTextFields = true,
+  } = params;
+
   yield* pipe(
     input,
     normalizeInputToAsyncIter,
     src => splitMultipartStreamToParts(src, boundary),
     mapAsyncIter(partIter =>
-      parseMultipartPart({
+      parseMultipartPart2({
         partStream: partIter,
+        parseTextFields,
         maxFieldSize,
         maxFileSize,
       })
