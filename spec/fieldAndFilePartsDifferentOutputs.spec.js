@@ -1,3 +1,4 @@
+const { Readable } = require('stream');
 const { expect } = require('chai');
 const multerator = require('../src');
 const pipe = require('./utils/pipe');
@@ -66,7 +67,8 @@ describe('Field/file parts distinction in output part infos', () => {
       expect(yieldedPartInfo.filename).to.equal('my_file');
     });
 
-    it('has `data` as an async iterable of buffers that make up the correct file value', async () => {
+    it('has `data` as a readable stream of buffers that make up the correct file value', async () => {
+      expect(yieldedPartInfo.data).to.be.instanceOf(Readable);
       const wholeVal = await bufferAsyncIterOfBuffers(yieldedPartInfo.data);
       expect(wholeVal).to.deep.equal(Buffer.from([0, 1, 2, 0, 1, 2]));
     });

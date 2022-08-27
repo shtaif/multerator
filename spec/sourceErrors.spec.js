@@ -5,7 +5,7 @@ const collectMultipartStream = require('./utils/collectMultipartStream');
 const prepareMultipartIterator = require('./utils/prepareMultipartIterator');
 
 describe('Errors from source stream', () => {
-  it('Conveys the error from source stream as-is that was being thrown immediately at start of consumption', async () => {
+  it('Propogates the error from source stream as-is that was being thrown immediately at start of consumption', async () => {
     const resultsPromise = pipe(
       (async function* () {
         throw plantedSourceError;
@@ -18,7 +18,7 @@ describe('Errors from source stream', () => {
     );
   });
 
-  it('Conveys the error from source stream as-is that was being thrown right after the value of some part', async () => {
+  it('Propogates the error from source stream as-is that was being thrown right after the value of some part', async () => {
     const resultsPromise = pipe(
       (async function* () {
         yield* prepareMultipartIterator(
@@ -37,7 +37,7 @@ describe('Errors from source stream', () => {
     );
   });
 
-  it('Conveys the error from source stream as-is that was being thrown in the middle of a boundary occurrence', async () => {
+  it('Propogates the error from source stream as-is that was being thrown in the middle of a boundary occurrence', async () => {
     const halfInterBoundary = `--${boundary.slice(
       0,
       Math.round(boundary.length / 2)
