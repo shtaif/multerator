@@ -5,7 +5,7 @@ import mapAsyncIter from './iter-utils/mapAsyncIter';
 import asyncIterAllowOnlyOneItemAtATime from './iter-utils/asyncIterAllowOnlyOneItemAtATime';
 import normalizeInputToAsyncIter from './utils/normalizeInputToAsyncIter';
 import splitMultipartStreamToParts from './utils/splitMultipartStreamToParts';
-import parseMultipartPart2, {
+import parseMultipartPart, {
   IncomingPart,
   IncomingTextPart,
   IncomingFilePart,
@@ -64,7 +64,7 @@ async function* multerator(params: {
     normalizeInputToAsyncIter,
     src => splitMultipartStreamToParts(src, boundary),
     mapAsyncIter(partIter =>
-      parseMultipartPart2({
+      parseMultipartPart({
         partStream: partIter,
         parseTextFields,
         maxFieldSize,
