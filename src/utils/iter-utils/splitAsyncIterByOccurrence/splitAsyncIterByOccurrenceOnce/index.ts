@@ -1,4 +1,4 @@
-import pipe from '../../../utils/pipe';
+import pipe from '../../../../utils/pipe';
 import asyncIterWindow, { windowSplitMark } from '../../asyncIterWindow';
 import findOccurrencesInStream from '../findOccurrencesInStream';
 
