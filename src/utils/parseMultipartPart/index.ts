@@ -1,8 +1,8 @@
 import { Readable } from 'stream';
-import { splitAsyncIterByOccurrenceOnce } from '../../iter-utils/splitAsyncIterByOccurrence';
-import asyncIterOfBuffersSizeLimiter from '../../iter-utils/asyncIterOfBuffersSizeLimiter';
-import concatBufferIterToString from '../../iter-utils/concatBufferIterToString';
-import asyncBufferIterToReadable from '../../iter-utils/asyncBufferIterToReadable';
+import { splitAsyncIterByOccurrenceOnce } from '../../utils/iter-utils/splitAsyncIterByOccurrence';
+import asyncIterOfBuffersSizeLimiter from '../../utils/iter-utils/asyncIterOfBuffersSizeLimiter';
+import concatBufferIterToString from '../../utils/iter-utils/concatBufferIterToString';
+import asyncBufferIterToReadable from '../../utils/iter-utils/asyncBufferIterToReadable';
 import allocUnsafeSlowFromUtf8 from '../allocUnsafeSlowFromUtf8';
 import pipe from '../pipe';
 import MulteratorError from '../MulteratorError';

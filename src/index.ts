@@ -1,8 +1,8 @@
 import { once } from 'events';
 import { Readable } from 'stream';
 import pipe from './utils/pipe';
-import mapAsyncIter from './iter-utils/mapAsyncIter';
-import asyncIterAllowOnlyOneItemAtATime from './iter-utils/asyncIterAllowOnlyOneItemAtATime';
+import mapAsyncIter from './utils/iter-utils/mapAsyncIter';
+import asyncIterAllowOnlyOneItemAtATime from './utils/iter-utils/asyncIterAllowOnlyOneItemAtATime';
 import normalizeInputToAsyncIter from './utils/normalizeInputToAsyncIter';
 import splitMultipartStreamToParts from './utils/splitMultipartStreamToParts';
 import parseMultipartPart, {

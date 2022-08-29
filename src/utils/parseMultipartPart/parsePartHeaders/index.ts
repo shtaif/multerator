@@ -1,5 +1,5 @@
-import asyncIterOfBuffersSizeLimiter from '../../../iter-utils/asyncIterOfBuffersSizeLimiter';
-import concatAsyncIterOfBuffers from '../../../iter-utils/concatAsyncIterOfBuffers';
+import asyncIterOfBuffersSizeLimiter from '../../../utils/iter-utils/asyncIterOfBuffersSizeLimiter';
+import concatAsyncIterOfBuffers from '../../../utils/iter-utils/concatAsyncIterOfBuffers';
 import allocUnsafeSlowFromUtf8 from '../../allocUnsafeSlowFromUtf8';
 import MulteratorError from '../../MulteratorError';
 import pipe from '../../pipe';

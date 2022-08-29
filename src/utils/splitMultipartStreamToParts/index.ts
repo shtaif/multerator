@@ -1,8 +1,8 @@
 import {
   splitAsyncIterByOccurrence,
   splitAsyncIterByOccurrenceOnce,
-} from '../../iter-utils/splitAsyncIterByOccurrence';
-import bufferUntilAccumulatedLength from '../../iter-utils/bufferUntilAccumulatedLength';
+} from '../../utils/iter-utils/splitAsyncIterByOccurrence';
+import bufferUntilAccumulatedLength from '../../utils/iter-utils/bufferUntilAccumulatedLength';
 import allocUnsafeSlowFromUtf8 from '../allocUnsafeSlowFromUtf8';
 import MulteratorError from '../MulteratorError';
 import drainIter from './drainIter';
