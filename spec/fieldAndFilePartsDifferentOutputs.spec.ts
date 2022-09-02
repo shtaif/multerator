@@ -1,9 +1,9 @@
-const { Readable } = require('stream');
-const { expect } = require('chai');
-const multerator = require('../src');
-const pipe = require('./utils/pipe');
-const bufferAsyncIterOfBuffers = require('./utils/bufferAsyncIterOfBuffers');
-const prepareMultipartIterator = require('./utils/prepareMultipartIterator');
+import { Readable } from 'stream';
+import { expect } from 'chai';
+import multerator from '../src';
+import pipe from './utils/pipe';
+import bufferAsyncIterOfBuffers from './utils/bufferAsyncIterOfBuffers';
+import prepareMultipartIterator from './utils/prepareMultipartIterator';
 
 describe('Field/file parts distinction in output part infos', () => {
   describe('When given a field part', () => {

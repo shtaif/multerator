@@ -1,10 +1,17 @@
-const dedent = require('dedent');
-const pipe = require('./pipe');
-const asyncIterReorganizeChunks = require('./asyncIterReorganizeChunks');
+import dedent from 'dedent';
+import pipe from './pipe';
+import asyncIterReorganizeChunks from './asyncIterReorganizeChunks';
 
-module.exports = prepareMultipartIterator;
+export default prepareMultipartIterator;
 
-function prepareMultipartIterator(source, chunkSize = 100) {
+function prepareMultipartIterator(
+  source:
+    | StringOrBuffer
+    | StringOrBuffer[]
+    | AsyncIterable<AsyncIterable<StringOrBuffer> | StringOrBuffer[]>
+    | AsyncIterable<StringOrBuffer[] | AsyncIterable<StringOrBuffer>>,
+  chunkSize = 100
+): AsyncGenerator<Buffer> {
   return pipe(
     source,
     input => {
@@ -45,3 +52,5 @@ function prepareMultipartIterator(source, chunkSize = 100) {
     input => asyncIterReorganizeChunks(input, chunkSize)
   );
 }
+
+type StringOrBuffer = string | Buffer;
