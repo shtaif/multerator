@@ -1,6 +1,6 @@
-const { expect } = require('chai');
-const multerator = require('../src');
-const prepareMultipartIterator = require('./utils/prepareMultipartIterator');
+import { expect } from 'chai';
+import multerator from '../src';
+import prepareMultipartIterator from './utils/prepareMultipartIterator';
 
 describe('Manually ending the Multerator iterable', () => {
   it('Ending the Multerator iterable when the first part is just starting ends the original source as well', async () => {

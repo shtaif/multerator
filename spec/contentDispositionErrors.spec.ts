@@ -1,7 +1,7 @@
-const { expect } = require('chai');
-const multerator = require('../src');
-const pipe = require('./utils/pipe');
-const prepareMultipartIterator = require('./utils/prepareMultipartIterator');
+import { expect } from 'chai';
+import multerator from '../src';
+import pipe from './utils/pipe';
+import prepareMultipartIterator from './utils/prepareMultipartIterator';
 
 describe('Content Disposition header errors', () => {
   it('Part with missing Content Disposition header throws an error of type "ERR_INVALID_OR_MISSING_CONTENT_DISPOSITION_HEADER"', async () => {

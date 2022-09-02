@@ -1,7 +1,10 @@
-module.exports = asyncIterReorganizeChunks;
+export default asyncIterReorganizeChunks;
 
-async function* asyncIterReorganizeChunks(source, chunkSizeThres) {
-  let buffers = [];
+async function* asyncIterReorganizeChunks(
+  source: AsyncIterable<Buffer>,
+  chunkSizeThres: number
+): AsyncGenerator<Buffer> {
+  let buffers: Buffer[] = [];
   let buffersTotalSize = 0;
 
   for await (const chunk of source) {

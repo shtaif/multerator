@@ -1,7 +1,7 @@
-const { expect } = require('chai');
-const multerator = require('../src');
-const pipe = require('./utils/pipe');
-const prepareMultipartIterator = require('./utils/prepareMultipartIterator');
+import { expect } from 'chai';
+import multerator from '../src';
+import pipe from './utils/pipe';
+import prepareMultipartIterator from './utils/prepareMultipartIterator';
 
 it("Each yielded part can resolve only after previous's body was finished", async () => {
   const source = pipe(

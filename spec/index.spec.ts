@@ -1,10 +1,10 @@
-const fs = require('fs');
-const { promisify } = require('util');
-const { expect } = require('chai');
-const multerator = require('../src');
-const pipe = require('./utils/pipe');
-const collectMultipartStream = require('./utils/collectMultipartStream');
-const prepareMultipartIterator = require('./utils/prepareMultipartIterator');
+import fs from 'fs';
+import { promisify } from 'util';
+import { expect } from 'chai';
+import multerator from '../src';
+import pipe from './utils/pipe';
+import collectMultipartStream from './utils/collectMultipartStream';
+import prepareMultipartIterator from './utils/prepareMultipartIterator';
 
 // TODO: Check if text fields can and should support a user-specified content type other then "text/plain" (for e.g text fields that contain JSON)
 // TODO: Max size validations - check if can take advantage of the presence of a Content-Length subheader to reject the sub-part to begin with, saving the need to consume and count it

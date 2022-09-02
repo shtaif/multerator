@@ -1,7 +1,7 @@
-const { expect } = require('chai');
-const multerator = require('../src');
-const pipe = require('./utils/pipe');
-const prepareMultipartIterator = require('./utils/prepareMultipartIterator');
+import { expect } from 'chai';
+import multerator from '../src';
+import pipe from './utils/pipe';
+import prepareMultipartIterator from './utils/prepareMultipartIterator';
 
 describe('Size limits', () => {
   it('Throws size limit error when text field crosses specified text field size limit', async () => {

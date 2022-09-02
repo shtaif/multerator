@@ -1,8 +1,8 @@
-const { expect } = require('chai');
-const multerator = require('../src');
-const pipe = require('./utils/pipe');
-const prepareMultipartIterator = require('./utils/prepareMultipartIterator');
-const collectMultipartStream = require('./utils/collectMultipartStream');
+import { expect } from 'chai';
+import multerator from '../src';
+import pipe from './utils/pipe';
+import prepareMultipartIterator from './utils/prepareMultipartIterator';
+import collectMultipartStream from './utils/collectMultipartStream';
 
 describe('Non-ASCII chars in part name and filename', () => {
   it("Correctly parses a part's name encoded with some non-ASCII chars", async () => {
