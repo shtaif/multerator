@@ -36,14 +36,14 @@ function multerator(params: {
   parseTextFields?: true;
   maxFileSize?: number;
   maxFieldSize?: number;
-}): AsyncGenerator<IncomingPart<true>, void, undefined>;
+}): AsyncGenerator<IncomingPart<true>, undefined, undefined>;
 function multerator(params: {
   input: Readable | AsyncIterable<Buffer> | Iterable<Buffer> | Buffer | string;
   boundary: string;
   parseTextFields: false;
   maxFileSize?: number;
   maxFieldSize?: number;
-}): AsyncGenerator<IncomingPart<false>, void, undefined>;
+}): AsyncGenerator<IncomingPart<false>, undefined, undefined>;
 async function* multerator(params: {
   input: Readable | AsyncIterable<Buffer> | Iterable<Buffer> | Buffer | string;
   boundary: string;
