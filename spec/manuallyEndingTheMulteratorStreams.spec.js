@@ -3,7 +3,7 @@ const multerator = require('../src');
 const prepareMultipartIterator = require('./utils/prepareMultipartIterator');
 
 describe('Manually ending the Multerator iterable', () => {
-  it('Ending the Multerator iterable when the first part is just starting ends the original source as well', async () => {
+  it('Ending the Multerator iterable when the first part has been just opened immediately ends the original source as well', async () => {
     const source = generateSampleSource();
 
     const multeratedSource = multerator({
@@ -17,10 +17,10 @@ describe('Manually ending the Multerator iterable', () => {
 
     const sourceNextItem = await source.next();
 
-    expect(sourceNextItem.done).to.be.true;
+    expect(sourceNextItem).to.contain({ done: true });
   });
 
-  it('Ending the Multerator iterable between chunks of the first part ends the original source as well', async () => {
+  it('Ending the Multerator iterable during the first part in between chunks immediately ends the original source as well', async () => {
     const source = generateSampleSource();
 
     const multeratedSource = multerator({
@@ -36,10 +36,10 @@ describe('Manually ending the Multerator iterable', () => {
 
     const sourceNextItem = await source.next();
 
-    expect(sourceNextItem.done).to.be.true;
+    expect(sourceNextItem).to.contain({ done: true });
   });
 
-  it('Ending the Multerator iterable when some intermediate part is just starting ends the original source as well', async () => {
+  it('Ending the Multerator iterable when some intermediate part has been just opened immediately ends the original source as well', async () => {
     const source = generateSampleSource();
 
     const multeratedSource = multerator({
@@ -57,10 +57,10 @@ describe('Manually ending the Multerator iterable', () => {
 
     const sourceNextItem = await source.next();
 
-    expect(sourceNextItem.done).to.be.true;
+    expect(sourceNextItem).to.contain({ done: true });
   });
 
-  it('Ending the Multerator iterable between chunks of some intermediate part ends the original source as well', async () => {
+  it('Ending the Multerator iterable during some intermediate part in between chunks immediately ends the original source as well', async () => {
     const source = generateSampleSource();
 
     const multeratedSource = multerator({
@@ -80,7 +80,26 @@ describe('Manually ending the Multerator iterable', () => {
 
     const sourceNextItem = await source.next();
 
-    expect(sourceNextItem.done).to.be.true;
+    expect(sourceNextItem).to.contain({ done: true });
+  });
+
+  it('Ending a part body sub iterable in between chunks immediately ends the original source as well', async () => {
+    const source = generateSampleSource();
+
+    const multeratedSource = multerator({
+      input: source,
+      boundary,
+    });
+
+    const firstPart = (await multeratedSource.next()).value;
+
+    for await (const _ of firstPart.data) {
+      break;
+    }
+
+    const sourceNextItem = await source.next();
+
+    expect(sourceNextItem).to.contain({ done: true });
   });
 });
 

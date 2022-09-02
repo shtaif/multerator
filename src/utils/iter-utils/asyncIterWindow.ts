@@ -1,24 +1,23 @@
 export { asyncIterWindow as default, windowSplitMark };
 
-async function* asyncIterWindow<VAL_T>(
-  src: AsyncIterable<VAL_T | typeof windowSplitMark>
-): AsyncGenerator<AsyncGenerator<VAL_T, void>, void> {
+async function* asyncIterWindow<ValueT>(
+  src: AsyncIterable<ValueT | typeof windowSplitMark>
+): AsyncGenerator<AsyncGenerator<ValueT, void>, void> {
   const srcIterator = src[Symbol.asyncIterator]();
-  let done: boolean | undefined = false;
   let hasError = false;
   let error;
-  let value: VAL_T | typeof windowSplitMark;
+  let item!: IteratorResult<typeof windowSplitMark | ValueT>;
 
   try {
     for (;;) {
-      yield (async function* () {
+      const windowIter = (async function* () {
         try {
           for (;;) {
-            ({ value, done } = await srcIterator.next());
-            if (value === windowSplitMark || done) {
+            item = await srcIterator.next();
+            if (item.value === windowSplitMark || item.done) {
               break;
             }
-            yield value;
+            yield item.value;
           }
         } catch (err) {
           hasError = true;
@@ -27,7 +26,17 @@ async function* asyncIterWindow<VAL_T>(
         }
       })();
 
-      if (done) {
+      windowIter.return = async () => {
+        await srcIterator.return?.();
+        return {
+          value: undefined,
+          done: true,
+        };
+      };
+
+      yield windowIter;
+
+      if (item.done) {
         break;
       }
 
@@ -36,7 +45,7 @@ async function* asyncIterWindow<VAL_T>(
       }
     }
   } finally {
-    await srcIterator.return?.();
+    await srcIterator.return?.(); // To account for directly closing the base windowing iterable itself
   }
 }
 
