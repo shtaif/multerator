@@ -91,7 +91,7 @@ describe('Manually ending the Multerator iterable', () => {
       boundary,
     });
 
-    const firstPart = (await multeratedSource.next()).value;
+    const firstPart = (await multeratedSource.next()).value!;
 
     for await (const _ of firstPart.data) {
       break;
