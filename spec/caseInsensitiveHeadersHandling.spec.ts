@@ -1,8 +1,8 @@
-const { expect } = require('chai');
-const multerator = require('../src');
-const pipe = require('./utils/pipe');
-const prepareMultipartIterator = require('./utils/prepareMultipartIterator');
-const collectMultipartStream = require('./utils/collectMultipartStream');
+import { expect } from 'chai';
+import multerator from '../src';
+import pipe from './utils/pipe';
+import prepareMultipartIterator from './utils/prepareMultipartIterator';
+import collectMultipartStream from './utils/collectMultipartStream';
 
 describe('Case-insensitive part headers handling', () => {
   it('Successfully parses and recognizes input data with headers in the conventional HTTP header case', async () => {

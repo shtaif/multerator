@@ -1,8 +1,8 @@
-const { expect } = require('chai');
-const multerator = require('../src');
-const pipe = require('./utils/pipe');
-const collectMultipartStream = require('./utils/collectMultipartStream');
-const prepareMultipartIterator = require('./utils/prepareMultipartIterator');
+import { expect } from 'chai';
+import multerator from '../src';
+import pipe from './utils/pipe';
+import collectMultipartStream from './utils/collectMultipartStream';
+import prepareMultipartIterator from './utils/prepareMultipartIterator';
 
 describe('Missing closing boundary', () => {
   it('Throws missing closing boundary error on a completely empty stream', async () => {

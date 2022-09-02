@@ -1,9 +1,9 @@
-const { expect } = require('chai');
-const multerator = require('../src');
-const pipe = require('./utils/pipe');
-const collectMultipartStream = require('./utils/collectMultipartStream');
-const prepareMultipartIterator = require('./utils/prepareMultipartIterator');
-const bufferToChunks = require('./utils/bufferToChunks');
+import { expect } from 'chai';
+import multerator from '../src';
+import pipe from './utils/pipe';
+import collectMultipartStream from './utils/collectMultipartStream';
+import prepareMultipartIterator from './utils/prepareMultipartIterator';
+import bufferToChunks from './utils/bufferToChunks';
 
 describe('Accepted input data types', () => {
   it('Successfully handles an async iterator of buffers', async () => {
