@@ -28,7 +28,7 @@ describe('Manually ending the Multerator iterable', () => {
       boundary,
     });
 
-    const firstPart = (await multeratedSource.next()).value;
+    const firstPart = (await multeratedSource.next()).value!;
 
     await firstPart.data[Symbol.asyncIterator]().next();
 
@@ -47,7 +47,7 @@ describe('Manually ending the Multerator iterable', () => {
       boundary,
     });
 
-    const firstPart = (await multeratedSource.next()).value;
+    const firstPart = (await multeratedSource.next()).value!;
 
     for await (const _ of firstPart.data);
 
@@ -68,11 +68,11 @@ describe('Manually ending the Multerator iterable', () => {
       boundary,
     });
 
-    const firstPart = (await multeratedSource.next()).value;
+    const firstPart = (await multeratedSource.next()).value!;
 
     for await (const _ of firstPart.data);
 
-    const secondPart = (await multeratedSource.next()).value;
+    const secondPart = (await multeratedSource.next()).value!;
 
     await secondPart.data[Symbol.asyncIterator]().next();
 
