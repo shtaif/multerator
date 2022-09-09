@@ -1,8 +1,16 @@
+import { Readable } from 'stream';
 import { expect } from 'chai';
+import sinon from 'sinon';
 import multerator from '../src';
+import pipe from './utils/pipe';
+import nextTick from './utils/nextTick';
 import prepareMultipartIterator from './utils/prepareMultipartIterator';
 
 describe('Manually ending the Multerator iterable', () => {
+  beforeEach(() => {
+    sinon.restore();
+  });
+
   it('Ending the Multerator iterable when the first part has been just opened immediately ends the original source as well', async () => {
     const source = generateSampleSource();
 
@@ -83,23 +91,55 @@ describe('Manually ending the Multerator iterable', () => {
     expect(sourceNextItem).to.contain({ done: true });
   });
 
-  it('Ending a part body sub iterable in between chunks immediately ends the original source as well', async () => {
-    const source = generateSampleSource();
+  describe('Ending a part body sub iterable in between chunks ends the original source a tick later as well', () => {
+    it('Source being an async iterable', async () => {
+      const source = generateSampleSource();
 
-    const multeratedSource = multerator({
-      input: source,
-      boundary,
+      const sourceReturnFulfilledByNowSpy = sinon.spy();
+
+      const sourceReturnStub = sinon
+        .stub(source, 'return')
+        .callsFake(async function () {
+          const res = await sourceReturnStub.wrappedMethod.call(this);
+          sourceReturnFulfilledByNowSpy();
+          return res;
+        });
+
+      const multeratedSource = multerator({
+        input: source,
+        boundary,
+      });
+
+      const firstPart = (await multeratedSource.next()).value!;
+
+      for await (const _ of firstPart.data) {
+        break;
+      }
+
+      await nextTick();
+
+      expect(sourceReturnStub).to.contain({ callCount: 1 });
+      expect(sourceReturnFulfilledByNowSpy).to.contain({ callCount: 1 });
     });
 
-    const firstPart = (await multeratedSource.next()).value!;
+    it('Source being a readable stream', async () => {
+      const source = pipe(generateSampleSource(), Readable.from);
 
-    for await (const _ of firstPart.data) {
-      break;
-    }
+      const multeratedSource = multerator({
+        input: source,
+        boundary,
+      });
 
-    const sourceNextItem = await source.next();
+      const firstPart = (await multeratedSource.next()).value!;
 
-    expect(sourceNextItem).to.contain({ done: true });
+      for await (const _ of firstPart.data) {
+        break;
+      }
+
+      await nextTick();
+
+      expect(source).to.contain({ destroyed: true });
+    });
   });
 });
 
