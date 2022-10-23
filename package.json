@@ -2,26 +2,34 @@
   "name": "multerator",
   "version": "0.10.0",
   "license": "MIT",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "author": "Dor Shtaif <dorshtaif@gmail.com>",
   "repository": "https://github.com/shtaif/multerator",
   "engineStrict": true,
+  "sideEffects": false,
   "engines": {
     "node": ">=10.21.0"
   },
-  "scripts": {
-    "test": "ts-mocha",
-    "release": "./scripts/release.sh",
-    "code-check": "prettier --check \"./src/**/*.{ts,js}\" && eslint ./src --cache && yarn run test && tsc --noEmit",
-    "build": "rm -rf ./dist && tsc",
-    "prepublishOnly": "yarn build"
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/cjs/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "default": "./dist/esm/index.js"
+    }
   },
   "files": [
     "dist"
   ],
+  "scripts": {
+    "test": "ts-mocha -p ./tsconfig-cjs.json",
+    "release": "./scripts/release.sh",
+    "code-check": "prettier --check \"./src/**/*.{ts,js}\" && eslint ./src --cache && yarn run test && tsc --noEmit",
+    "build": "rm -rf ./dist && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && node ./scripts/mark-dist-dirs-package-module-type.js",
+    "prepublishOnly": "yarn build"
+  },
   "devDependencies": {
-    "@tsconfig/node10": "^1.0.8",
     "@types/chai": "^4.2.21",
     "@types/chai-subset": "^1.3.3",
     "@types/mocha": "^8.2.3",
@@ -44,6 +52,6 @@
     "sinon": "^14.0.0",
     "standard-version": "^9.3.1",
     "ts-mocha": "^8.0.0",
-    "typescript": "^4.3.5"
+    "typescript": "^4.8.4"
   }
 }

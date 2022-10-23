@@ -1,9 +1,9 @@
 import { Readable } from 'stream';
 import { expect } from 'chai';
-import multerator from '../src';
-import pipe from './utils/pipe';
-import bufferAsyncIterOfBuffers from './utils/bufferAsyncIterOfBuffers';
-import prepareMultipartIterator from './utils/prepareMultipartIterator';
+import { multerator } from '../src/index.js';
+import pipe from './utils/pipe.js';
+import bufferAsyncIterOfBuffers from './utils/bufferAsyncIterOfBuffers.js';
+import prepareMultipartIterator from './utils/prepareMultipartIterator.js';
 
 describe('Field/file parts distinction in output part infos', () => {
   describe('When given a field part', () => {

@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import multerator from '../src';
-import pipe from './utils/pipe';
+import { multerator } from '../src/index.js';
+import pipe from './utils/pipe.js';
 import collectMultipartStream from './utils/collectMultipartStream';
 import prepareMultipartIterator from './utils/prepareMultipartIterator';
 

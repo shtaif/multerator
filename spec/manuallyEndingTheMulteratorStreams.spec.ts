@@ -1,8 +1,8 @@
 import { Readable } from 'stream';
 import { expect } from 'chai';
 import sinon from 'sinon';
-import multerator from '../src';
-import pipe from './utils/pipe';
+import { multerator } from '../src/index.js';
+import pipe from './utils/pipe.js';
 import nextTick from './utils/nextTick';
 import prepareMultipartIterator from './utils/prepareMultipartIterator';
 

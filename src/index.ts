@@ -1,24 +1,17 @@
 import { once } from 'events';
 import { Readable } from 'stream';
-import pipe from './utils/pipe';
-import mapAsyncIter from './utils/iter-utils/mapAsyncIter';
-import asyncIterAllowOnlyOneItemAtATime from './utils/iter-utils/asyncIterAllowOnlyOneItemAtATime';
-import normalizeInputToAsyncIter from './utils/normalizeInputToAsyncIter';
-import splitMultipartStreamToParts from './utils/splitMultipartStreamToParts';
+import pipe from './utils/pipe.js';
+import mapAsyncIter from './utils/iter-utils/mapAsyncIter.js';
+import asyncIterAllowOnlyOneItemAtATime from './utils/iter-utils/asyncIterAllowOnlyOneItemAtATime.js';
+import normalizeInputToAsyncIter from './utils/normalizeInputToAsyncIter.js';
+import splitMultipartStreamToParts from './utils/splitMultipartStreamToParts/index.js';
 import parseMultipartPart, {
   IncomingPart,
   IncomingTextPart,
   IncomingFilePart,
-} from './utils/parseMultipartPart';
+} from './utils/parseMultipartPart/index.js';
 
-export {
-  multerator as default,
-  IncomingPart,
-  IncomingTextPart,
-  IncomingFilePart,
-};
-
-module.exports = multerator; // To allow importing by simply `const multerator = require('multerator');` inside consuming projects that are plain JavaScript
+export { multerator, IncomingPart, IncomingTextPart, IncomingFilePart };
 
 // TODO: For focused testing - several occurances of the search sequence in a row
 // TODO: For focused testing - stream starts with an occurance of search sequence

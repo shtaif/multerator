@@ -1,5 +1,5 @@
-import splitAsyncIterByOccurrence from './splitAsyncIterByOccurrence';
-import splitAsyncIterByOccurrenceOnce from './splitAsyncIterByOccurrenceOnce';
+import splitAsyncIterByOccurrence from './splitAsyncIterByOccurrence/index.js';
+import splitAsyncIterByOccurrenceOnce from './splitAsyncIterByOccurrenceOnce/index.js';
 
 export { splitAsyncIterByOccurrence, splitAsyncIterByOccurrenceOnce };
 

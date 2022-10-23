@@ -1,6 +1,6 @@
-import pipe from '../../../../utils/pipe';
-import asyncIterWindow, { windowSplitMark } from '../../asyncIterWindow';
-import findOccurrencesInStream from '../findOccurrencesInStream';
+import pipe from '../../../../utils/pipe.js';
+import asyncIterWindow, { windowSplitMark } from '../../asyncIterWindow.js';
+import findOccurrencesInStream from '../findOccurrencesInStream/index.js';
 
 export default splitAsyncIterByOccurrenceOnce;
 

@@ -1,6 +1,6 @@
-import findPartialMatchToTheEnd from './findPartialMatchToTheEnd';
-import bufferStartsWith from './bufferStartsWith';
-import findWholeMatches from './findWholeMatches';
+import findPartialMatchToTheEnd from './findPartialMatchToTheEnd.js';
+import bufferStartsWith from './bufferStartsWith.js';
+import findWholeMatches from './findWholeMatches.js';
 
 export { findOccurrencesInStream as default, SequenceOccurrencePosition };
 

@@ -1,6 +1,6 @@
-import allocUnsafeSlowFromUtf8 from '../../allocUnsafeSlowFromUtf8';
-import MulteratorError from '../../MulteratorError';
-import splitBufferBySequence from '../../splitBufferBySequence';
+import allocUnsafeSlowFromUtf8 from '../../allocUnsafeSlowFromUtf8.js';
+import MulteratorError from '../../MulteratorError.js';
+import splitBufferBySequence from '../../splitBufferBySequence.js';
 
 export default parseRawContentDisposition;
 

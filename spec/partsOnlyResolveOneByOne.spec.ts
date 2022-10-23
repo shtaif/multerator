@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import multerator from '../src';
-import pipe from './utils/pipe';
+import { multerator } from '../src/index.js';
+import pipe from './utils/pipe.js';
 import prepareMultipartIterator from './utils/prepareMultipartIterator';
 
 it("Each yielded part can resolve only after previous's body was finished", async () => {
