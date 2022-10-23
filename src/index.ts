@@ -11,14 +11,7 @@ import parseMultipartPart, {
   IncomingFilePart,
 } from './utils/parseMultipartPart';
 
-export {
-  multerator as default,
-  IncomingPart,
-  IncomingTextPart,
-  IncomingFilePart,
-};
-
-module.exports = multerator; // To allow importing by simply `const multerator = require('multerator');` inside consuming projects that are plain JavaScript
+export { multerator, IncomingPart, IncomingTextPart, IncomingFilePart };
 
 // TODO: For focused testing - several occurances of the search sequence in a row
 // TODO: For focused testing - stream starts with an occurance of search sequence
