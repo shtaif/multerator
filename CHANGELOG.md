@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.11.0](https://github.com/shtaif/multerator/compare/v0.10.0...v0.11.0) (2022-10-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* normalize main library export (#59)
+
+### Features
+
+* add `parseTextFields` optional boolean parameter (`true` on default) to make it possible to disable the text field parsing behavior ([#50](https://github.com/shtaif/multerator/issues/50)) ([a393581](https://github.com/shtaif/multerator/commit/a39358140b3c3de624ddebda330a732b7290cd54))
+* add dual CommonJS and ESM builds ([#58](https://github.com/shtaif/multerator/issues/58)) ([34b107f](https://github.com/shtaif/multerator/commit/34b107faec06bdb036c63a3f5f303b6dd12814c6))
+* improve the main Multerator iterable's return type to be externally more type-forgiving ([#57](https://github.com/shtaif/multerator/issues/57)) ([0fd78b8](https://github.com/shtaif/multerator/commit/0fd78b83cabacd799fa9e0bdd4975c9bf19bbfa7))
+* normalize main library export ([#59](https://github.com/shtaif/multerator/issues/59)) ([3b0c461](https://github.com/shtaif/multerator/commit/3b0c461ba1734595e6ca8dc68baa528a8b32341b))
+
+
+### Bug Fixes
+
+* ending a part body's iterable should also close the source ([#55](https://github.com/shtaif/multerator/issues/55)) ([74b6961](https://github.com/shtaif/multerator/commit/74b69615406045b0b5f87b2556454077fa33a7e3))
+* ending the multerator iterable not ending the source input ([#48](https://github.com/shtaif/multerator/issues/48)) ([69d27aa](https://github.com/shtaif/multerator/commit/69d27aa3215e0174ae0cffc96fe57a5650ac0878))
+* failed detecting start boundaries that aren't preceded by a CRLF ([#45](https://github.com/shtaif/multerator/issues/45)) ([f3a7b97](https://github.com/shtaif/multerator/commit/f3a7b97f35350c6dbfea15f63dbd2c77083367cb))
+
 ## [0.10.0](https://github.com/shtaif/multerator/compare/v0.9.0...v0.10.0) (2022-02-03)
 
 
