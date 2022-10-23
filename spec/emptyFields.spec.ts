@@ -1,8 +1,8 @@
 import { expect } from 'chai';
-import { multerator } from '../src';
-import pipe from './utils/pipe';
-import collectMultipartStream from './utils/collectMultipartStream';
-import prepareMultipartIterator from './utils/prepareMultipartIterator';
+import { multerator } from '../src/index.js';
+import pipe from './utils/pipe.js';
+import collectMultipartStream from './utils/collectMultipartStream.js';
+import prepareMultipartIterator from './utils/prepareMultipartIterator.js';
 
 describe('Empty fields', () => {
   it('Empty text field from source ends up as an empty string', async () => {

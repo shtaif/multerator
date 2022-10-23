@@ -1,9 +1,9 @@
 import { expect } from 'chai';
-import { multerator } from '../src';
-import pipe from './utils/pipe';
-import collectMultipartStream from './utils/collectMultipartStream';
-import prepareMultipartIterator from './utils/prepareMultipartIterator';
-import bufferToChunks from './utils/bufferToChunks';
+import { multerator } from '../src/index.js';
+import pipe from './utils/pipe.js';
+import collectMultipartStream from './utils/collectMultipartStream.js';
+import prepareMultipartIterator from './utils/prepareMultipartIterator.js';
+import bufferToChunks from './utils/bufferToChunks.js';
 
 describe('Accepted input data types', () => {
   it('Successfully handles an async iterator of buffers', async () => {

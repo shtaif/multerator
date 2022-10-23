@@ -1,4 +1,4 @@
-import MulteratorError from './MulteratorError';
+import MulteratorError from './MulteratorError.js';
 
 export default normalizeInputToAsyncIter;
 

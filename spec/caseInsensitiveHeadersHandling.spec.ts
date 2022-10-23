@@ -1,8 +1,8 @@
 import { expect } from 'chai';
-import { multerator } from '../src';
-import pipe from './utils/pipe';
-import prepareMultipartIterator from './utils/prepareMultipartIterator';
-import collectMultipartStream from './utils/collectMultipartStream';
+import { multerator } from '../src/index.js';
+import pipe from './utils/pipe.js';
+import prepareMultipartIterator from './utils/prepareMultipartIterator.js';
+import collectMultipartStream from './utils/collectMultipartStream.js';
 
 describe('Case-insensitive part headers handling', () => {
   it('Successfully parses and recognizes input data with headers in the conventional HTTP header case', async () => {

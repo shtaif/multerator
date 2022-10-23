@@ -1,5 +1,5 @@
-import bufferUntil from './bufferUntil';
-import prependAsyncIter from './prependAsyncIter';
+import bufferUntil from './bufferUntil.js';
+import prependAsyncIter from './prependAsyncIter.js';
 
 export default bufferUntilAccumulatedLength;
 

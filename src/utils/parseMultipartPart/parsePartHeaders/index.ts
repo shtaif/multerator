@@ -1,11 +1,11 @@
-import asyncIterOfBuffersSizeLimiter from '../../../utils/iter-utils/asyncIterOfBuffersSizeLimiter';
-import concatAsyncIterOfBuffers from '../../../utils/iter-utils/concatAsyncIterOfBuffers';
-import allocUnsafeSlowFromUtf8 from '../../allocUnsafeSlowFromUtf8';
-import MulteratorError from '../../MulteratorError';
-import pipe from '../../pipe';
-import splitBufferBySequence from '../../splitBufferBySequence';
-import splitBufferBySequenceOnce from '../../splitBufferBySequenceOnce';
-import parseRawContentDisposition from './parseRawContentDisposition';
+import asyncIterOfBuffersSizeLimiter from '../../../utils/iter-utils/asyncIterOfBuffersSizeLimiter.js';
+import concatAsyncIterOfBuffers from '../../../utils/iter-utils/concatAsyncIterOfBuffers.js';
+import allocUnsafeSlowFromUtf8 from '../../allocUnsafeSlowFromUtf8.js';
+import MulteratorError from '../../MulteratorError.js';
+import pipe from '../../pipe.js';
+import splitBufferBySequence from '../../splitBufferBySequence.js';
+import splitBufferBySequenceOnce from '../../splitBufferBySequenceOnce.js';
+import parseRawContentDisposition from './parseRawContentDisposition.js';
 
 export default parsePartHeaders;
 

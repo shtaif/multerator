@@ -1,6 +1,6 @@
 import dedent from 'dedent';
-import pipe from './pipe';
-import asyncIterReorganizeChunks from './asyncIterReorganizeChunks';
+import pipe from './pipe.js';
+import asyncIterReorganizeChunks from './asyncIterReorganizeChunks.js';
 
 export default prepareMultipartIterator;
 

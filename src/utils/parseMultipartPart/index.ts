@@ -1,12 +1,12 @@
 import { Readable } from 'stream';
-import { splitAsyncIterByOccurrenceOnce } from '../../utils/iter-utils/splitAsyncIterByOccurrence';
-import asyncIterOfBuffersSizeLimiter from '../../utils/iter-utils/asyncIterOfBuffersSizeLimiter';
-import concatBufferIterToString from '../../utils/iter-utils/concatBufferIterToString';
-import asyncBufferIterToReadable from '../../utils/iter-utils/asyncBufferIterToReadable';
-import allocUnsafeSlowFromUtf8 from '../allocUnsafeSlowFromUtf8';
-import pipe from '../pipe';
-import MulteratorError from '../MulteratorError';
-import parsePartHeaders from './parsePartHeaders';
+import { splitAsyncIterByOccurrenceOnce } from '../../utils/iter-utils/splitAsyncIterByOccurrence/index.js';
+import asyncIterOfBuffersSizeLimiter from '../../utils/iter-utils/asyncIterOfBuffersSizeLimiter.js';
+import concatBufferIterToString from '../../utils/iter-utils/concatBufferIterToString.js';
+import asyncBufferIterToReadable from '../../utils/iter-utils/asyncBufferIterToReadable.js';
+import allocUnsafeSlowFromUtf8 from '../allocUnsafeSlowFromUtf8.js';
+import pipe from '../pipe.js';
+import MulteratorError from '../MulteratorError.js';
+import parsePartHeaders from './parsePartHeaders/index.js';
 
 export {
   parseMultipartPart as default,
@@ -128,3 +128,33 @@ interface IncomingPartBase {
   contentType: string;
   encoding: string;
 }
+
+// type IncomingPart<IsTextPartParsed extends boolean = boolean> =
+//   | IncomingPartBase<'text', IsTextPartParsed>
+//   | IncomingPartBase<'file'>;
+
+// type IncomingTextPart<IsParsed extends boolean = boolean> = IncomingPartBase<
+//   'text',
+//   IsParsed
+// >;
+
+// type IncomingFilePart = IncomingPartBase<'file'>;
+
+// type IncomingPartBase<
+//   PartType extends 'file' | 'text' = 'file' | 'text',
+//   IsTextPartParsed extends boolean = boolean
+// > = (PartType extends 'file'
+//   ? {
+//       type: 'file';
+//       data: Readable;
+//       filename: string;
+//     }
+//   : {
+//       type: 'text';
+//       data: IsTextPartParsed extends true ? string : Readable;
+//       filename: undefined;
+//     }) & {
+//   name: string;
+//   contentType: string;
+//   encoding: string;
+// };

@@ -1,11 +1,11 @@
 import {
   splitAsyncIterByOccurrence,
   splitAsyncIterByOccurrenceOnce,
-} from '../../utils/iter-utils/splitAsyncIterByOccurrence';
-import bufferUntilAccumulatedLength from '../../utils/iter-utils/bufferUntilAccumulatedLength';
-import allocUnsafeSlowFromUtf8 from '../allocUnsafeSlowFromUtf8';
-import MulteratorError from '../MulteratorError';
-import drainIter from './drainIter';
+} from '../../utils/iter-utils/splitAsyncIterByOccurrence/index.js';
+import bufferUntilAccumulatedLength from '../../utils/iter-utils/bufferUntilAccumulatedLength.js';
+import allocUnsafeSlowFromUtf8 from '../allocUnsafeSlowFromUtf8.js';
+import MulteratorError from '../MulteratorError.js';
+import drainIter from './drainIter.js';
 
 export default splitMultipartStreamToParts;
 
