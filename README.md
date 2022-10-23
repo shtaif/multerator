@@ -23,7 +23,7 @@ yarn add multerator
 # Synopsis
 
 ```js
-const multerator = require('multerator');
+const { multerator } = require('multerator');
 
 (async () => {
    // Obtain a multipart data stream:
@@ -69,7 +69,7 @@ const multerator = require('multerator');
 const fs = require('fs');
 const { PassThrough } = require('stream');
 const FormData = require('form-data');
-const multerator = require('multerator');
+const { multerator } = require('multerator');
 
 (async () => {
   // Obtain a multipart data stream with help from form-data package:
@@ -108,7 +108,7 @@ const { createWriteStream } = require('fs');
 const { pipeline } = require('stream');
 const { promisify } = require('util');
 const express = require('express');
-const multerator = require('multerator');
+const { multerator } = require('multerator');
 
 const pipelinePromisified = promisify(pipeline);
 
