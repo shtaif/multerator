@@ -1,7 +1,7 @@
 import { Readable } from 'stream';
 import { expect } from 'chai';
 import sinon from 'sinon';
-import multerator from '../src';
+import { multerator } from '../src';
 import pipe from './utils/pipe';
 import nextTick from './utils/nextTick';
 import prepareMultipartIterator from './utils/prepareMultipartIterator';
