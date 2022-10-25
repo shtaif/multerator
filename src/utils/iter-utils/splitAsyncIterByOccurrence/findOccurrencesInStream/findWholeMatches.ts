@@ -3,7 +3,7 @@ export default findWholeMatches;
 function* findWholeMatches(
   buf: Buffer,
   sequenceBuf: Buffer,
-  startFrom: number = 0
+  startFrom = 0
 ): Generator<number> {
   let nextStartFrom = startFrom;
 
