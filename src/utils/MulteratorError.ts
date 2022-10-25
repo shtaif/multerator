@@ -1,5 +1,5 @@
 class MulteratorError<
-  TInfo extends object | undefined = undefined
+  TInfo extends Record<string, unknown> | undefined = undefined
 > extends Error {
   code: string;
   info?: TInfo;

@@ -7,7 +7,7 @@ export default splitAsyncIterByOccurrenceOnce;
 async function* splitAsyncIterByOccurrenceOnce(
   source: AsyncIterable<Buffer>,
   sequence: Buffer,
-  optionalErrorOnNoOccurrence?: Function
+  optionalErrorOnNoOccurrence?: () => unknown
 ): AsyncGenerator<AsyncGenerator<Buffer, void>, void> {
   yield* pipe(
     source,
