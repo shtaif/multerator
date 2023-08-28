@@ -4,18 +4,18 @@ description: Reusable common setup for project's CI jobs
 runs:
   using: composite
   steps:
-    - uses: actions/setup-node@v2
+    - uses: actions/setup-node@v3
       with:
-        node-version: '10.21.0'
+        node-version: v20.5.1
 
-    - name: Get Node.js Version
+    - name: Get Node.js version
       id: node_version
       run: |
         echo "::set-output name=version::$(node -v)"
       shell: bash
 
-    - name: Install yarn
-      run: npm install -g yarn
+    - name: Install `pnpm`
+      run: npm install -g pnpm
       shell: bash
 
     - name: Restore possibly cached dependencies
@@ -23,9 +23,9 @@ runs:
       uses: actions/cache@v2
       with:
         path: ./node_modules
-        key: node-modules-${{ runner.os }}-${{ steps.node_version.outputs.version }}-${{ hashFiles('./yarn.lock') }}
+        key: node-modules-${{ runner.os }}-${{ steps.node_version.outputs.version }}-${{ hashFiles('./pnpm-lock.yaml') }}
 
     - name: Install dependencies if weren't cached
       if: steps.cache-node-modules.outputs.cache-hit != 'true'
-      run: yarn install
+      run: pnpm install --frozen-lockfile
       shell: bash
